@@ -46,7 +46,40 @@ window.VBA=(function(){
     if(m.pos[j+1]<m.b.y0)m.pos[j+1]=m.b.y1;else if(m.pos[j+1]>m.b.y1)m.pos[j+1]=m.b.y0;
     if(m.pos[j+2]<m.b.z0)m.pos[j+2]=m.b.z1;else if(m.pos[j+2]>m.b.z1)m.pos[j+2]=m.b.z0}
    m.g.attributes.position.needsUpdate=true}}
+
+ /* ---- brilho (bloom): pós-processamento próprio, só com o three.js do jogo ----
+    A cena é desenhada para um alvo com antialiasing; as zonas muito brilhantes (luzes, LEDs, faróis) são
+    isoladas, desfocadas a 1/4 da resolução e somadas por cima. Desliga-se sozinho no «Modo leve» e em WebGL1. */
+ var post={on:true,amount:.55,thr:.86,_act:false,_i:null};
+ function postInit(R){
+  var th=T();if(!R.capabilities.isWebGL2||!th.WebGLMultisampleRenderTarget){post.on=false;return null}
+  var vs='varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}';
+  var mk=function(fs,u){return new th.ShaderMaterial({uniforms:u,vertexShader:vs,fragmentShader:fs,depthTest:false,depthWrite:false,toneMapped:false})};
+  var i={th:th,scn:new th.Scene(),cam:new th.OrthographicCamera(-1,1,1,-1,0,1),w:0,h:0,sz:new th.Vector2()};
+  i.quad=new th.Mesh(new th.PlaneGeometry(2,2),null);i.quad.frustumCulled=false;i.scn.add(i.quad);
+  i.bright=mk('uniform sampler2D t;uniform float th;varying vec2 vUv;void main(){vec3 c=texture2D(t,vUv).rgb;float l=dot(c,vec3(.299,.587,.114));float k=smoothstep(th,th+.2,l);gl_FragColor=vec4(c*k,1.);}',{t:{value:null},th:{value:post.thr}});
+  i.blur=mk('uniform sampler2D t;uniform vec2 d;varying vec2 vUv;void main(){vec3 s=texture2D(t,vUv).rgb*.227027;s+=(texture2D(t,vUv+d*1.3846).rgb+texture2D(t,vUv-d*1.3846).rgb)*.316216;s+=(texture2D(t,vUv+d*3.2308).rgb+texture2D(t,vUv-d*3.2308).rgb)*.070270;gl_FragColor=vec4(s,1.);}',{t:{value:null},d:{value:new th.Vector2()}});
+  i.comp=mk('uniform sampler2D t;uniform sampler2D b;uniform float a;varying vec2 vUv;void main(){gl_FragColor=vec4(texture2D(t,vUv).rgb+texture2D(b,vUv).rgb*a,1.);}',{t:{value:null},b:{value:null},a:{value:post.amount}});
+  return i}
+ function fit(R,i){
+  R.getDrawingBufferSize(i.sz);var w=Math.max(2,i.sz.x|0),h=Math.max(2,i.sz.y|0);if(w===i.w&&h===i.h&&i.rt)return;
+  var th=i.th;i.w=w;i.h=h;if(i.rt){i.rt.dispose();i.a.dispose();i.b.dispose()}
+  i.rt=new th.WebGLMultisampleRenderTarget(w,h,{format:th.RGBAFormat,encoding:th.sRGBEncoding,samples:4});
+  var o={minFilter:th.LinearFilter,magFilter:th.LinearFilter,format:th.RGBAFormat,encoding:th.sRGBEncoding},bw=Math.max(2,w>>2),bh=Math.max(2,h>>2);
+  i.a=new th.WebGLRenderTarget(bw,bh,o);i.b=new th.WebGLRenderTarget(bw,bh,o);i.bw=bw;i.bh=bh}
+ post.begin=function(R){
+  post._act=false;if(!post.on||isLight())return false;
+  if(post._i===null)post._i=postInit(R)||false;var i=post._i;if(!i)return false;
+  fit(R,i);R.setRenderTarget(i.rt);post._act=true;return true};
+ post.end=function(R){
+  var i=post._i;if(!post._act||!i)return;var q=i.quad;
+  var run=function(m,tgt){q.material=m;R.setRenderTarget(tgt);R.autoClear=true;R.render(i.scn,i.cam)};
+  i.bright.uniforms.t.value=i.rt.texture;i.bright.uniforms.th.value=post.thr;run(i.bright,i.a);
+  [1.5,3].forEach(function(k){
+   i.blur.uniforms.t.value=i.a.texture;i.blur.uniforms.d.value.set(k/i.bw,0);run(i.blur,i.b);
+   i.blur.uniforms.t.value=i.b.texture;i.blur.uniforms.d.value.set(0,k/i.bh);run(i.blur,i.a)});
+  i.comp.uniforms.t.value=i.rt.texture;i.comp.uniforms.b.value=i.a.texture;i.comp.uniforms.a.value=post.amount;run(i.comp,null);post._act=false};
  /* esconde feixes e halos no Modo leve (chamar depois de setLight) */
  function setLight(S,v){S.traverse(function(o){if(o.userData&&(o.userData.vba==='beam'||o.userData.vba==='glow'))o.visible=!v})}
- return {beam:beam,ray:ray,wallAO:wallAO,glow:glow,dust:dust,setLight:setLight,isLight:isLight}
+ return {post:post,beam:beam,ray:ray,wallAO:wallAO,glow:glow,dust:dust,setLight:setLight,isLight:isLight}
 })();

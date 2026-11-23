@@ -48,6 +48,10 @@ python3 tests/e2e-jogos.py       # cartões de conceito e jogar só com o teclad
 O ficheiro inteiro está dentro de uma única função (`document.addEventListener("DOMContentLoaded", () => { ... })`) e as suas secções partilham centenas de variáveis locais. Cortá-lo em vários ficheiros faria cada pedaço deixar de ver as variáveis dos outros. A divisão a sério exige converter para módulos ES (`import`/`export`) e testar universo a universo; deve ser feita como um trabalho à parte, nunca por corte automático.
 Para te orientares, as secções estão assinaladas com cabeçalhos `/* ===== NOME ===== */`: pesquisa por exemplo `BFS SOLVER`, `LEVEL COMPLETE`, `CERTIFICADO` ou `ESCAPE ROOMS MODULE`.
 
+## Brilho (bloom)
+
+`VBA.post` (em `blocos/vb-atmos.js`) desenha a cena para um alvo com antialiasing, isola as zonas muito brilhantes, desfoca-as e soma-as por cima. Opção «✨ Brilho» na página; desliga-se sozinho no «Modo leve» e se o navegador só tiver WebGL1. Cada jogo ajusta `VBA.post.thr` (limiar) e `VBA.post.amount` (força): as fábricas (escuras) usam os valores por defeito, a casa (clara) usa limiar alto e força baixa para não «lavar» a imagem.
+
 ## Gráficos 3D (Fábrica de Carros e Pai Natal)
 
 - O chão tem reflexo real (a cena é desenhada duas vezes). O «Modo leve» desliga-o e é ativado sozinho em computadores lentos.

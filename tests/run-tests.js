@@ -28,7 +28,7 @@ for(const m of pr.matchAll(/⭐⭐⭐ com (\d+) ou menos; ⭐⭐ até (\d+)/g)){
 ok(n>0&&bad===0,`professora.html: ${n} limiares coerentes com a regra`);
 
 // 4) service worker e versões
-ok(/vanbertos-v52/.test(R('sw.js')),'sw.js: cache atualizada');
+ok(/vanbertos-v53/.test(R('sw.js')),'sw.js: cache atualizada');
 for(const g of ['fabrica','casa-cao','natal']) ok(R(`blocos/${g}.html`).includes('vb-solucoes.js')&&R(`blocos/${g}.html`).includes('VB.compare'),`${g}: carrega as soluções e a comparação`);
 ok(R('sw.js').includes('vb-solucoes.js'),'sw.js: guarda vb-solucoes.js offline');
 console.log('\nPara validar as soluções no motor real dos jogos:  python3 tests/verify-missoes.py');
@@ -38,4 +38,5 @@ for(const g of ['fabrica','casa-cao','natal']){const h=R(`blocos/${g}.html`);ok(
 ok(R('sw.js').includes('vb-extras.js')&&R('sw.js').includes('vb-jogo.css'),'sw.js: guarda extras e CSS comum offline');
 for(const g of ['fabrica','casa-cao','natal'])ok(R(`blocos/${g}.html`).includes('vb-atmos.js')&&R(`blocos/${g}.html`).includes('VBA.'),`${g}: usa a atmosfera 3D (vb-atmos.js)`);
 ok(R('sw.js').includes('vb-atmos.js'),'sw.js: guarda vb-atmos.js offline');
+for(const g of ['fabrica','casa-cao','natal'])ok(R(`blocos/${g}.html`).includes('VBA.post.begin(R)')&&R(`blocos/${g}.html`).includes('VBA.post.end(R)'),`${g}: pós-processamento de brilho ligado`);
 process.exit(fail?1:0);

@@ -22,6 +22,9 @@
   var lt=$('#lt'),host=lt&&lt.closest('label');
   if(host){var l=document.createElement('label');l.innerHTML='<input type="checkbox" id="kb"> ⌨️ Modo teclado';host.insertAdjacentElement('afterend',l);
    l.querySelector('input').addEventListener('change',function(e){try{localStorage.setItem('vb-teclado',e.target.checked?'1':'0')}catch(x){}applyKb();if(e.target.checked&&t)t.focus()})}
+  if(host&&window.VBA){var bl=document.createElement('label');bl.innerHTML='<input type="checkbox" id="bl"> ✨ Brilho';host.insertAdjacentElement('afterend',bl);
+   var bi=bl.querySelector('input'),on=true;try{on=localStorage.getItem('vb-bloom')!=='0'}catch(x){}bi.checked=on;VBA.post.on=on;
+   bi.addEventListener('change',function(e){VBA.post.on=e.target.checked;try{localStorage.setItem('vb-bloom',e.target.checked?'1':'0')}catch(x){}})}
   if(typeof levels==='function'){var orig=levels;levels=function(){var r=orig.apply(this,arguments);runIntro();applyKb();return r}}
   runIntro();applyKb()}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();

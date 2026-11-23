@@ -124,7 +124,8 @@ VBG.env(R,S,{top:'#1a2a66',mid:'#3d5aa8',bottom:'#0e1228',panelI:4,panels:[[0xff
 function floorTex(){const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');g.fillStyle='#33466f';g.fillRect(0,0,256,256);g.strokeStyle='#4a5f93';g.lineWidth=3;g.strokeRect(1,1,254,254);g.fillStyle='rgba(255,255,255,.04)';for(let i=0;i<70;i++)g.fillRect(Math.random()*256,Math.random()*256,3,3);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(10,5);t.encoding=THREE.sRGBEncoding;return t}
 const FLOOR=box(40,.3,20,new THREE.MeshStandardMaterial({map:floorTex(),roughness:.34,metalness:.28,envMapIntensity:1.1,transparent:true,opacity:.7}),2,-.15,-2);
 /* reflexo real no chão: 1.º passe = cena espelhada (chão escondido); 2.º passe = cena normal com o chão semitransparente. Desligado no Modo leve. */
-function drawScene(){
+function drawScene(){const P=window.VBA&&VBA.post.begin(R);drawScene0();if(P)VBA.post.end(R)}
+function drawScene0(){
  if(light){FLOOR.material.opacity=1;R.render(S,cam);return}
  FLOOR.material.opacity=.7;
  const bg=S.background;FLOOR.visible=false;S.scale.y=-1;S.updateMatrixWorld(true);R.render(S,cam);
