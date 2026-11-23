@@ -101,7 +101,7 @@ const CY=[
  {t:'A encomenda pode ser azul ou vermelha. Solda 1 vez, pinta da cor da encomenda, monta o motor, as 4 rodas e entrega.',max:10,tests:[{cor:'B'},{cor:'R'}],x:e=>['S',e.cor,'M',...x(4,'W'),'E']},
  {t:'🔍 Controlo de qualidade! Solda, pinta de vermelho e, SE o carro tiver defeito, retoca a pintura. Depois entrega.',max:6,tests:[{defeito:true},{defeito:false}],x:e=>['S','R',...(e.defeito?['X']:[]),'E']},
  {t:'A encomenda pode ser azul ou vermelha. Solda 1 vez; se for azul, pinta de azul e monta o motor; senão, pinta de vermelho. Entrega no fim.',max:8,tests:[{cor:'B'},{cor:'R'}],x:e=>e.cor==='B'?['S','B','M','E']:['S','R','E']},
- {t:'Controlo de qualidade e encomenda! Solda, pinta da cor da encomenda, SE o carro tiver defeito retoca, monta o motor e entrega.',max:10,tests:[{cor:'B',defeito:true},{cor:'R',defeito:false},{cor:'B',defeito:false}],x:e=>['S',e.cor,...(e.defeito?['X']:[]),'M','E']}]}
+ {t:'Controlo de qualidade e encomenda! Solda, pinta da cor da encomenda (que é sempre azul ou vermelha), SE o carro tiver defeito retoca, monta o motor e entrega.',max:12,tests:[{cor:'B',defeito:true},{cor:'R',defeito:false},{cor:'B',defeito:false}],x:e=>['S',e.cor,...(e.defeito?['X']:[]),'M','E']}]}
 ];
 const FAILS={};let cy=0,LV=CY[0].lv,lv=0,prog=[],sel=-1,SPD=1,running=false,light=false;
 
