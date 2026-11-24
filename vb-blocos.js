@@ -2,8 +2,8 @@
    a partir do menu de universos. Os jogos vivem na pasta blocos/ e abrem num ecrã por cima do menu. */
 (function(){
   var GAMES={
-    fabrica:{title:'🏭 Fábrica de Carros',src:'blocos/fabrica.html',key:'vbf',max:102},
-    natal:{title:'🎅 Fábrica do Pai Natal',src:'blocos/natal.html',key:'vbn',max:93},
+    fabrica:{title:'🏭 Fábrica de Carros',src:'blocos/fabrica.html',key:'vbf',max:126},
+    natal:{title:'🎅 Fábrica do Pai Natal',src:'blocos/natal.html',key:'vbn',max:117},
     casa:{title:'🐕 Cão Robô',src:'blocos/casa-cao.html',key:'vbc',max:78}
   };
   var ov=null,fr=null,INLINE=window.VB_BLOCOS_INLINE||null;
