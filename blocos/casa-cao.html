@@ -177,6 +177,8 @@ const dogSpr=new THREE.Mesh(dogGeo,dogMat);dogSpr.visible=false;dogSpr.renderOrd
 VBG.blob(dog,0,.01,0,1.5,.9,.55);
 /* o cartão olha sempre para a câmara; espelha-se para o lado para onde o cão anda (a ilustração olha para a esquerda) */
 let dogFlip=false,dogPulse=0,dogRoll=0;
+/* poses extra do cão por ação: patas (0,1 = da frente), cabeça a olhar para o lado (dogLook) e a subir/descer (dogNod) */
+const dogLegs=[0,0,0,0];let dogLook=0,dogNod=0;
 /* ---------- cão-robô em 3D (modelo procedural; a ilustração fica como alternativa em «Cão 3D» desligado) ---------- */
 let dog3d=true,walkK=0,dogHappyUntil=0;try{if(localStorage.getItem('vb-dog3d')==='0')dog3d=false}catch(e){}
 const dogBody=new THREE.Group();dog.add(dogBody);dogBody.scale.setScalar(.95);dogBody.position.x=.04;
@@ -212,12 +214,12 @@ function applyDog(){dogBody.visible=dog3d;dogSpr.visible=!dog3d&&!!dogTex.image}
 applyDog();
 function dog3dUpdate(){
  const t=performance.now()/1000,w=walkK>0&&walkK<1,happy=performance.now()<dogHappyUntil;
- legs.forEach((l,i)=>{l.rotation.z=w?Math.sin(walkK*Math.PI*4+(i===0||i===3?0:Math.PI))*.55:0});
+ legs.forEach((l,i)=>{l.rotation.z=(w?Math.sin(walkK*Math.PI*4+(i===0||i===3?0:Math.PI))*.55:0)+dogLegs[i]});
  dogBody.position.y=w?Math.abs(Math.sin(walkK*Math.PI*4))*.07:Math.sin(t*2.2)*.012;
  dogBody.rotation.z=dogRoll;
  dTail.rotation.y=Math.sin(t*(happy?16:5))*(happy?.7:.35);
  dogBody.userData.ears.forEach((e,i)=>{e.rotation.z=Math.sin(t*2+i)*.05+(w?Math.sin(walkK*Math.PI*4)*.15:0)});
- dHead.rotation.z=Math.sin(t*1.3)*.04;dHead.rotation.y=happy?Math.sin(t*9)*.18:0;
+ dHead.rotation.z=Math.sin(t*1.3)*.04+dogNod;dHead.rotation.y=(happy?Math.sin(t*9)*.18:0)+dogLook;
 }
 function dogUpdate(){
  if(dog3d){dog3dUpdate();return}
@@ -328,7 +330,7 @@ function show(E){
  const bw=cyl(.31,.26,.18,M(0xff6b6b,.5),LVG);bw.position.set(bx,.14,bz);
  cyl(.22,.22,.05,M(0x5a2a0c,.9),LVG).position.set(bx,.24,bz);
  {const bn=new THREE.Group();bn.position.set(Math.max(-W*TS/2+.45,Math.min(W*TS/2-.45,tx-sx*.72)),.09,tz+sz*.72);bn.rotation.y=.5;LVG.add(bn);const bm=M(0xfff4d0,.6);const sh=cyl(.05,.05,.5,bm,bn);sh.rotation.z=Math.PI/2;[[-.25,.07],[-.25,-.07],[.25,.07],[.25,-.07]].forEach(p=>{const k=new THREE.Mesh(new THREE.SphereGeometry(.08,10,8),bm);k.position.set(p[0],0,p[1]);k.castShadow=true;bn.add(k)})}
- dog.position.set(px(E.start.x),.03,pz(E.start.y));ang=-E.start.d*Math.PI/2;dog.rotation.y=ang;legs.forEach(l=>l.rotation.z=0);
+ dog.position.set(px(E.start.x),.03,pz(E.start.y));ang=-E.start.d*Math.PI/2;dog.rotation.y=ang;legs.forEach(l=>l.rotation.z=0);dogLegs.fill(0);dogLook=0;dogNod=0;dogRoll=0;
 }
 function size(){const w=cv.clientWidth||640;R.setPixelRatio(light?.5:Math.min(window.devicePixelRatio||1,2));R.setSize(w,w*9/16,false)}
 function setLight(v,auto){light=v;if(window.__sun)window.__sun.visible=!v;window.VBA&&VBA.setLight(S,v);$('#lt').checked=v;R.shadowMap.enabled=!v;S.environment=v?null:VBG.envTex;dl.castShadow=!v;S.traverse(o=>{if(o.material)o.material.needsUpdate=true});size();if(auto)say('Fiz o modo leve para ajudar este computador. 😉')}
@@ -348,16 +350,37 @@ async function play(a){
   if(a.bump){beep(160,.3,'sawtooth');T(k=>{dogRoll=-Math.sin(k*Math.PI)*.22},600);await T(k=>{const b=Math.sin(k*Math.PI)*.4;dog.position.x=x0+DX[a.d]*b;dog.position.z=z0+DY[a.d]*b},300)}
   else{beep(330,.08);await T(k=>{dog.position.x=lerp(x0,x1,k);dog.position.z=lerp(z0,z1,k);swing(k)},380);swing(0)}
  }else if(a.k==='L'||a.k==='R'){
-  const dl_=a.k==='L'?Math.PI/2:-Math.PI/2,a0=ang;await T(k=>dog.rotation.y=a0+dl_*k,260);ang=a0+dl_;
+  /* virar: o cão olha primeiro para o lado e só depois roda o corpo; som mais agudo à direita, mais grave à esquerda */
+  const sg=a.k==='L'?1:-1,dl_=sg*Math.PI/2,a0=ang;
+  beep(a.k==='L'?330:520,.06);beep(a.k==='L'?260:660,.06,'sine',.08);
+  await T(k=>{const e=Math.max(0,(k-.25)/.75);dog.rotation.y=a0+dl_*e*e*(3-2*e);dogLook=sg*.7*Math.sin(k*Math.PI)},340);
+  dogLook=0;ang=a0+dl_;
  }else if(a.k==='luz'){
   const i=lampObjs.length?(window.__E?window.__E.lamps.findIndex(l=>l[0]===a.x&&l[1]===a.y):-1):-1;
-  if(i>=0){setLamp(i,a.lit.includes(key(a.x,a.y)));beep(880,.15,'sine')}
-  await hop(300);
+  if(i<0){ /* não há candeeiro aqui: abana a cabeça «não» */
+   beep(160,.3,'sawtooth');await T(k=>{dogLook=Math.sin(k*Math.PI*6)*.6*(1-k)},520);dogLook=0;
+  }else{ /* levanta-se nas patas de trás, toca no candeeiro e este pisca */
+   const on=a.lit.includes(key(a.x,a.y)),o=lampObjs[i];
+   beep(520,.1,'triangle');
+   await T(k=>{const e=Math.sin(k*Math.PI/2);dogRoll=(dog3d?.5:.12)*e;dogNod=.5*e;dogLegs[0]=dogLegs[1]=1.1*e;dog.position.y=.03+(dog3d?.04:.3)*e},330);
+   setLamp(i,on);beep(on?880:330,.15,'sine');dogHappyUntil=performance.now()+(on?900:0);
+   const s0=o.glow.scale.clone();
+   await T(k=>o.glow.scale.copy(s0).multiplyScalar(1+.35*Math.sin(k*Math.PI)),300);o.glow.scale.copy(s0);
+   await T(k=>{const e=Math.cos(k*Math.PI/2);dogRoll=(dog3d?.5:.12)*e;dogNod=.5*e;dogLegs[0]=dogLegs[1]=1.1*e;dog.position.y=.03+(dog3d?.04:.3)*e},260);
+   dogRoll=0;dogNod=0;dogLegs[0]=dogLegs[1]=0;dog.position.y=.03;
+  }
  }else if(a.k==='porta'){
-  const E=window.__E;let any=false;
-  E.doors.forEach((d,i)=>{if(a.open.includes(i)&&!doorObjs[i].open){any=true;doorObjs[i].open=true;doorObjs[i].b.material.color.set(0x2fb88f);doorObjs[i].b.material.emissive.set(0x0a7a55)}});
-  if(any){beep(440,.1);beep(660,.2,'square',.1);await T(k=>doorObjs.forEach(o=>{if(o.open)o.m.position.y=lerp(o.m.position.y,-.8,.25*SPD)}),700)}
-  else await hop(250);
+  const E=window.__E;
+  if(a.bump){ /* não há botão aqui: abana a cabeça «não» */
+   beep(160,.3,'sawtooth');await T(k=>{dogLook=Math.sin(k*Math.PI*6)*.6*(1-k)},520);dogLook=0;
+  }else{ /* pisa o botão do chão com as patas da frente: clique, clique, e a porta abre */
+   beep(260,.05,'square');beep(260,.05,'square',.26);
+   await T(k=>{const a1=Math.abs(Math.sin(k*Math.PI*2)),a2=Math.abs(Math.cos(k*Math.PI*2));dogLegs[0]=.7*a1;dogLegs[1]=.7*(1-a2);dogNod=-.3*a1;dog.position.y=.03-.02*a1},520);
+   dogLegs[0]=dogLegs[1]=0;dogNod=0;dog.position.y=.03;
+   let any=false;
+   E.doors.forEach((d,i)=>{if(a.open.includes(i)&&!doorObjs[i].open){any=true;doorObjs[i].open=true;doorObjs[i].b.material.color.set(0x2fb88f);doorObjs[i].b.material.emissive.set(0x0a7a55)}});
+   if(any){beep(440,.1);beep(660,.2,'square',.1);await T(k=>doorObjs.forEach(o=>{if(o.open)o.m.position.y=lerp(o.m.position.y,-.8,.25*SPD)}),700)}
+  }
  }
  await T(()=>{},60);
 }
