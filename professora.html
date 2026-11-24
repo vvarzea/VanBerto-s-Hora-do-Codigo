@@ -294,23 +294,27 @@ if encomenda == "azul":
     montar_motor()
 else:
     pintar("vermelho")
-entregar()</pre></div></div><p class="muted">7 blocos (conta sem o «fim»). ⭐⭐⭐ com 7 ou menos; ⭐⭐ até 9. Limite da missão: <b>8</b> blocos. O jogo testa várias situações (2): a solução tem de servir para todas.</p></details><details><summary>Missão 10 — <span style="font-weight:600">Controlo de qualidade e encomenda! Solda, pinta da cor da encomenda (que é sempre azul ou vermelha), SE o carro tiver defeito retoca, monta o motor e entrega.</span></summary><div class="sol"><div><b>Blocos</b><pre>🔥 soldar
+entregar()</pre></div></div><p class="muted">7 blocos (conta sem o «fim»). ⭐⭐⭐ com 7 ou menos; ⭐⭐ até 9. Limite da missão: <b>8</b> blocos. O jogo testa várias situações (2): a solução tem de servir para todas.</p></details><details><summary>Missão 10 — <span style="font-weight:600">Controlo de qualidade e encomenda! Solda, pinta da cor da encomenda (azul, vermelha ou amarela), SE o carro tiver defeito retoca, monta o motor e entrega.</span></summary><div class="sol"><div><b>Blocos</b><pre>🔥 soldar
 🔀 se encomenda azul
   🎨 pintar azul
-↔ senão
+🔀 se encomenda vermelha
   🎨 pintar vermelho
+🔀 se encomenda amarela
+  🎨 pintar amarelo
 🔀 se houver defeito
   🔧 retocar a pintura
 🔧 montar o motor
 📦 entregar</pre></div><div><b>Python</b><pre>soldar()
 if encomenda == "azul":
     pintar("azul")
-else:
+if encomenda == "vermelha":
     pintar("vermelho")
+if encomenda == "amarela":
+    pintar("amarelo")
 if tem_defeito():
     retocar()
 montar_motor()
-entregar()</pre></div></div><p class="muted">9 blocos (conta sem o «fim»). ⭐⭐⭐ com 9 ou menos; ⭐⭐ até 12. Limite da missão: <b>10</b> blocos. O jogo testa várias situações (3): a solução tem de servir para todas.</p></details></div></details><details id="rob-casa"><summary>🐕 Cão Robô</summary><div style="margin-top:8px"><h3 style="margin:12px 0 4px;font-size:1rem">1.º Ciclo</h3><details><summary>Missão 1 — <span style="font-weight:600">Leva o cão até à tigela 🦴.</span></summary><div class="sol"><div><b>Blocos</b><pre>🐕 andar
+entregar()</pre></div></div><p class="muted">11 blocos (conta sem o «fim»). ⭐⭐⭐ com 11 ou menos; ⭐⭐ até 14. Limite da missão: <b>12</b> blocos. O jogo testa várias situações (4): a solução tem de servir para todas.</p></details></div></details><details id="rob-casa"><summary>🐕 Cão Robô</summary><div style="margin-top:8px"><h3 style="margin:12px 0 4px;font-size:1rem">1.º Ciclo</h3><details><summary>Missão 1 — <span style="font-weight:600">Leva o cão até à tigela 🦴.</span></summary><div class="sol"><div><b>Blocos</b><pre>🐕 andar
 🐕 andar
 🐕 andar</pre></div><div><b>Python</b><pre>andar()
 andar()

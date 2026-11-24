@@ -58,9 +58,9 @@
 <script src="vb-gfx.js"></script>
 <script>
 const $=s=>document.querySelector(s);
-const NAME={S:'🔥 soldar',R:'🎨 pintar vermelho',B:'🎨 pintar azul',G:'🎨 pintar verde',Y:'🎨 pintar amarelo',ifB:'🔀 se encomenda azul',ifR:'🔀 se encomenda vermelha',else:'↔ senão',X:'🔧 retocar a pintura',ifD:'🔀 se houver defeito',wh:'🔄 enquanto faltar soldar',M:'🔧 montar o motor',W:'🛞 montar uma roda',E:'📦 entregar',rep:'🔁 repetir',end:'fim'};
-const COL={S:'#ff8a3d',R:'#e5484d',B:'#3e63dd',G:'#4c9a2a',Y:'#d4a000',ifB:'#2b8a9e',ifR:'#2b8a9e',else:'#4aa8bb',X:'#9333ea',ifD:'#2b8a9e',wh:'#c2410c',M:'#2b8a9e',W:'#d97706',E:'#30a46c',rep:'#8e4ec6',end:'#a98bd8'};
-const PY={S:'soldar()',R:'pintar("vermelho")',B:'pintar("azul")',G:'pintar("verde")',Y:'pintar("amarelo")',ifB:'if encomenda == "azul":',ifR:'if encomenda == "vermelha":',wh:'while faltam_pecas():',X:'retocar()',ifD:'if tem_defeito():',M:'montar_motor()',W:'montar_roda()',E:'entregar()'};
+const NAME={S:'🔥 soldar',R:'🎨 pintar vermelho',B:'🎨 pintar azul',G:'🎨 pintar verde',Y:'🎨 pintar amarelo',ifB:'🔀 se encomenda azul',ifR:'🔀 se encomenda vermelha',ifY:'🔀 se encomenda amarela',else:'↔ senão',X:'🔧 retocar a pintura',ifD:'🔀 se houver defeito',wh:'🔄 enquanto faltar soldar',M:'🔧 montar o motor',W:'🛞 montar uma roda',E:'📦 entregar',rep:'🔁 repetir',end:'fim'};
+const COL={S:'#ff8a3d',R:'#e5484d',B:'#3e63dd',G:'#4c9a2a',Y:'#d4a000',ifB:'#2b8a9e',ifR:'#2b8a9e',ifY:'#2b8a9e',else:'#4aa8bb',X:'#9333ea',ifD:'#2b8a9e',wh:'#c2410c',M:'#2b8a9e',W:'#d97706',E:'#30a46c',rep:'#8e4ec6',end:'#a98bd8'};
+const PY={S:'soldar()',R:'pintar("vermelho")',B:'pintar("azul")',G:'pintar("verde")',Y:'pintar("amarelo")',ifB:'if encomenda == "azul":',ifR:'if encomenda == "vermelha":',ifY:'if encomenda == "amarela":',wh:'while faltam_pecas():',X:'retocar()',ifD:'if tem_defeito():',M:'montar_motor()',W:'montar_roda()',E:'entregar()'};
 const x=(n,k)=>Array(n).fill(k);
 const ALL=['S','R','B','G','Y','M','W','E','rep'];
 const CY=[
@@ -91,7 +91,7 @@ const CY=[
  {t:'Repete 3 vezes: soldar e pintar de verde. Depois monta o motor, as 4 rodas e entrega.',g:['S','G','S','G','S','G','M',...x(4,'W'),'E']},
  {t:'Repete 4 vezes: soldar e pintar de amarelo. Depois monta o motor e entrega.',g:['S','Y','S','Y','S','Y','S','Y','M','E']},
  {t:'Carro completo: solda 3 vezes, pinta de azul, monta o motor, as 4 rodas e entrega.',g:[...x(3,'S'),'B','M',...x(4,'W'),'E']}]},
-{n:'Secundário',b:[...ALL,'ifB','ifR','else','wh','ifD','X'],py:2,lv:[
+{n:'Secundário',b:[...ALL,'ifB','ifR','ifY','else','wh','ifD','X'],py:2,lv:[
  {t:'Repete 2 vezes: soldar, soldar e pintar de vermelho. Depois entrega.',max:5,g:['S','S','R','S','S','R','E']},
  {t:'Solda 12 vezes e entrega. Dica: repetir dentro de repetir!',max:4,g:[...x(12,'S'),'E']},
  {t:'Repete 2 vezes: soldar 4 vezes e pintar de vermelho. Depois entrega.',max:5,g:[...x(4,'S'),'R',...x(4,'S'),'R','E']},
@@ -101,7 +101,7 @@ const CY=[
  {t:'A encomenda pode ser azul ou vermelha. Solda 1 vez, pinta da cor da encomenda, monta o motor, as 4 rodas e entrega.',max:10,tests:[{cor:'B'},{cor:'R'}],x:e=>['S',e.cor,'M',...x(4,'W'),'E']},
  {t:'🔍 Controlo de qualidade! Solda, pinta de vermelho e, SE o carro tiver defeito, retoca a pintura. Depois entrega.',max:6,tests:[{defeito:true},{defeito:false}],x:e=>['S','R',...(e.defeito?['X']:[]),'E']},
  {t:'A encomenda pode ser azul ou vermelha. Solda 1 vez; se for azul, pinta de azul e monta o motor; senão, pinta de vermelho. Entrega no fim.',max:8,tests:[{cor:'B'},{cor:'R'}],x:e=>e.cor==='B'?['S','B','M','E']:['S','R','E']},
- {t:'Controlo de qualidade e encomenda! Solda, pinta da cor da encomenda (que é sempre azul ou vermelha), SE o carro tiver defeito retoca, monta o motor e entrega.',max:12,tests:[{cor:'B',defeito:true},{cor:'R',defeito:false},{cor:'B',defeito:false}],x:e=>['S',e.cor,...(e.defeito?['X']:[]),'M','E']}]}
+ {t:'Controlo de qualidade e encomenda! Solda, pinta da cor da encomenda (azul, vermelha ou amarela), SE o carro tiver defeito retoca, monta o motor e entrega.',max:12,tests:[{cor:'B',defeito:true},{cor:'R',defeito:false},{cor:'Y',defeito:true},{cor:'B',defeito:false}],x:e=>['S',e.cor,...(e.defeito?['X']:[]),'M','E']}]}
 ];
 const FAILS={};let cy=0,LV=CY[0].lv,lv=0,prog=[],sel=-1,SPD=1,running=false,light=false;
 
@@ -257,7 +257,7 @@ const tag=new THREE.Group();tag.position.set(-.1,1.55,0);car.add(tag);
 const flag=box(.5,.3,.05,M(0xe5484d),0,.25,0,tag);box(.04,.5,.04,steel,0,0,0,tag);
 const pcs=new THREE.Group();pcs.position.set(-.55,1.35,0);car.add(pcs);
 for(let i=0;i<5;i++)box(.18,.18,.18,M(0x9aa3b8,.4,.8),i*.22,0,0,pcs);
-function showEnv(e){ENV=e;tag.visible=!!(e&&e.cor);if(e&&e.cor)flag.material.color.set(e.cor==='B'?0x3e63dd:0xe5484d);pcs.children.forEach((c,i)=>c.visible=!!(e&&e.pecas!=null&&i<e.pecas))}
+function showEnv(e){ENV=e;tag.visible=!!(e&&e.cor);if(e&&e.cor)flag.material.color.set(e.cor==='B'?0x3e63dd:e.cor==='Y'?0xf5c518:0xe5484d);pcs.children.forEach((c,i)=>c.visible=!!(e&&e.pecas!=null&&i<e.pecas))}
 
 /* faíscas e tinta */
 const NP=90,pg=new THREE.BufferGeometry(),pp=new Float32Array(NP*3),pv=new Float32Array(NP*3),pl=new Float32Array(NP);
@@ -333,7 +333,7 @@ const ACT={
 };
 
 /* ---------- blocos ---------- */
-const OPEN=['rep','wh','ifB','ifR','ifD'];
+const OPEN=['rep','wh','ifB','ifR','ifY','ifD'];
 function build(){return VB.build(prog,OPEN)}
 function run(nodes,env,out){
  for(const nd of nodes){
@@ -342,7 +342,7 @@ function run(nodes,env,out){
   if(k==='rep'){for(let j=0;j<nd.t.n;j++)run(nd.b,env,out)}
   else if(k==='wh'){let c=0;while(env&&env.pecas>0&&c++<20)run(nd.b,env,out)}
   else if(k==='ifD'){run(env&&env.defeito?nd.b:(nd.e||[]),env,out)}
-  else if(k==='ifB'||k==='ifR'){run(env&&env.cor===(k==='ifB'?'B':'R')?nd.b:(nd.e||[]),env,out)}
+  else if(k==='ifB'||k==='ifR'||k==='ifY'){run(env&&env.cor===({ifB:'B',ifR:'R',ifY:'Y'})[k]?nd.b:(nd.e||[]),env,out)}
   else{out.push({k,i:nd.i});if(k==='S'&&env&&env.pecas>0)env.pecas--}
  }
 }
@@ -378,6 +378,7 @@ function parsePy(t){
   else if(l==='while faltam_pecas():'){ok({k:'wh'},l);depth++}
   else if(/^if encomenda == ["']azul["']:$/.test(l)){ok({k:'ifB'},l);depth++}
   else if(/^if encomenda == ["']vermelha["']:$/.test(l)){ok({k:'ifR'},l);depth++}
+  else if(/^if encomenda == ["']amarela["']:$/.test(l)){ok({k:'ifY'},l);depth++}
   else if(l==='if tem_defeito():'){ok({k:'ifD'},l);depth++}
   else if(l==='retocar()')ok({k:'X'},l);
   else if(l==='soldar()')ok({k:'S'},l);
@@ -393,7 +394,7 @@ function parsePy(t){
 function clear(){prog=(LV[lv]&&LV[lv].pre)?JSON.parse(JSON.stringify(LV[lv].pre)):[]}
 /* ---------- editor de blocos (Blockly) ---------- */
 const BL={"S": {"t": "soldar", "c": "#ff8a3d"}, "R": {"t": "pintar de vermelho", "c": "#e5484d"}, "B": {"t": "pintar de azul", "c": "#3e63dd"}, "G": {"t": "pintar de verde", "c": "#4c9a2a"}, "Y": {"t": "pintar de amarelo", "c": "#c99700"}, "M": {"t": "montar o motor", "c": "#2b8a9e"}, "W": {"t": "montar uma roda", "c": "#d97706"}, "E": {"t": "entregar o carro", "c": "#30a46c"}, "X": {"t": "retocar a pintura", "c": "#9333ea"}};
-const CONDS={"ifB": {"t": "encomenda azul"}, "ifR": {"t": "encomenda vermelha"}, "ifD": {"t": "houver defeito"}},WHILES={"wh": {"t": "faltar soldar"}};
+const CONDS={"ifB": {"t": "encomenda azul"}, "ifR": {"t": "encomenda vermelha"}, "ifY": {"t": "encomenda amarela"}, "ifD": {"t": "houver defeito"}},WHILES={"wh": {"t": "faltar soldar"}};
 const ED=VBEditor.create({host:$('#bw'),blocks:BL,
  conds:CONDS,
  whiles:WHILES,py:PY,open:OPEN,repMax:5,repColor:'#8e4ec6',ctrlColor:'#2b8a9e',whileColor:'#c2410c'});
@@ -565,7 +566,7 @@ function rrVan(ctx,x,y,w,h,r){
 })();
 
 /* ---------- missões ---------- */
-const OPT=[[2,3,3,3,4,4,3,3],[4,4,6,4,6,7,4,6,6],[4,4,7,7,7,5,7],[5,4,5,4,6,7,9,5,7,9]];
+const OPT=[[2,3,3,3,4,4,3,3],[4,4,6,4,6,7,4,6,6],[4,4,7,7,7,5,7],[5,4,5,4,6,7,9,5,7,11]];
 let P={name:'',d:{}};
 try{P=JSON.parse(localStorage.getItem('vbf'))||P}catch(e){}
 const save=()=>{try{localStorage.setItem('vbf',JSON.stringify(P))}catch(e){}};
@@ -643,7 +644,7 @@ $('#go').onclick=async()=>{
  if(!acts.length){say('Junta primeiro alguns blocos! 🙂');return}
  if(acts.length>40){say('Programa muito grande! Usa o repetir com menos vezes.','sad');return}
  running=true;ED.lock(true);$('#msg').textContent='';reset();tStart();showEnv(e0?{...e0}:null);
- const lab=e0&&e0.defeito!==undefined?(e0.defeito?'🔍 Controlo de qualidade: defeito na pintura! · ':'🔍 Controlo de qualidade: sem defeitos · '):e0?(e0.cor?'📋 Encomenda '+(e0.cor==='B'?'azul':'vermelha')+' · ':'🔩 Peças por soldar: '+e0.pecas+' · '):'';
+ const lab=e0&&e0.defeito!==undefined?(e0.defeito?'🔍 Controlo de qualidade: defeito na pintura! · ':'🔍 Controlo de qualidade: sem defeitos · '):e0?(e0.cor?'📋 Encomenda '+(e0.cor==='B'?'azul':e0.cor==='Y'?'amarela':'vermelha')+' · ':'🔩 Peças por soldar: '+e0.pecas+' · '):'';
  const off=()=>{ED.highlight(null);pyOn(null)};
  for(let i=0;i<acts.length;i++){
   off();ED.highlight(acts[i].i);pyOn(acts[i].i);if(document.getElementById('stp')&&document.getElementById('stp').checked)await VB.step();
