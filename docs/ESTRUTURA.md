@@ -48,6 +48,10 @@ python3 tests/e2e-jogos.py       # cartões de conceito e jogar só com o teclad
 O ficheiro inteiro está dentro de uma única função (`document.addEventListener("DOMContentLoaded", () => { ... })`) e as suas secções partilham centenas de variáveis locais. Cortá-lo em vários ficheiros faria cada pedaço deixar de ver as variáveis dos outros. A divisão a sério exige converter para módulos ES (`import`/`export`) e testar universo a universo; deve ser feita como um trabalho à parte, nunca por corte automático.
 Para te orientares, as secções estão assinaladas com cabeçalhos `/* ===== NOME ===== */`: pesquisa por exemplo `BFS SOLVER`, `LEVEL COMPLETE`, `CERTIFICADO` ou `ESCAPE ROOMS MODULE`.
 
+## Ajuda quando o aluno erra várias vezes
+
+`VB.help` (em `blocos/vb-solucoes.js`) é chamada pelos três jogos sempre que uma execução falha. Conta os erros por missão e vai oferecendo mais ajuda: 1.º erro só a mensagem; 2.º erro botão «💡 Uma ajuda» (dica adaptada ao tipo de erro: `seq`, `blocos`, `todos` ou `obstaculo`); 3.º erro «🔍 Ver os primeiros passos»; 5.º erro «👀 Ver a solução completa». O contador volta a zero quando a missão é cumprida. Ver a ajuda **não** tira estrelas.
+
 ## Brilho (bloom)
 
 `VBA.post` (em `blocos/vb-atmos.js`) desenha a cena para um alvo com antialiasing, isola as zonas muito brilhantes, desfoca-as e soma-as por cima. Opção «✨ Brilho» na página; desliga-se sozinho no «Modo leve» e se o navegador só tiver WebGL1. Cada jogo ajusta `VBA.post.thr` (limiar) e `VBA.post.amount` (força): as fábricas (escuras) usam os valores por defeito, a casa (clara) usa limiar alto e força baixa para não «lavar» a imagem.

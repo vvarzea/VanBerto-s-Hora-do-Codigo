@@ -30,5 +30,17 @@ with sync_playwright() as p:
     try: pg.wait_for_selector('.vbc-btn',timeout=200000); res=True
     except Exception: res=False
     ok(res and 'Missão cumprida' in pg.inner_text('#msg'),'modo teclado: missão completada só com texto + Ctrl+Enter'); ok(not errs,'modo teclado: sem erros JS')
+    # ajuda que cresce com os erros (Cão Robô, ciclo 2, missão 5): 1.º erro sem ajuda, 2.º dica, 3.º primeiros passos, 5.º solução
+    pg2=b.new_page(viewport={'width':1000,'height':900}); errs2=[]; pg2.on('pageerror',lambda e:errs2.append(str(e)))
+    pg2.goto((ROOT/'casa-cao.html').as_uri(),wait_until='domcontentloaded',timeout=90000); pg2.wait_for_timeout(3000)
+    pg2.evaluate("()=>{window.setLight=()=>{};light=false;VBA.post.on=false}")
+    pg2.evaluate('([c,l])=>{cy=c;LV=CY[c].lv;lv=l;clear();levels();render()}',[1,4])
+    esperado={1:[],2:['tip'],3:['tip','start'],4:['tip','start'],5:['tip','start','full']}
+    for n in range(1,6):
+        pg2.evaluate('(py)=>{prog=parsePy(py);render()}','andar()\nandar()')
+        pg2.click('#go'); pg2.wait_for_function("()=>/❌|💥/.test(document.getElementById('msg').textContent)",timeout=150000); pg2.wait_for_timeout(250)
+        got=pg2.evaluate("[...document.querySelectorAll('#msg .vbh-b button')].map(b=>b.getAttribute('data-a'))")
+        ok(got==esperado[n],f'ajuda no erro {n}: botões {got}')
+    ok(not errs2,'ajuda: sem erros JS')
     b.close()
 sys.exit(1 if bad else 0)

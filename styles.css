@@ -2117,7 +2117,7 @@ body.dark .level-concept{color:#e9d5ff!important;background:#3b2a5a;border-color
 :where(a,button,input,select,textarea,[role="button"],[tabindex]):focus-visible{outline:3px solid #2563eb;outline-offset:2px;border-radius:6px}
 html.vb-big-text{font-size:118%}
 html.vb-big-text .u-desc,html.vb-big-text .muted{font-size:1.05em}
-.vb-a11y-btn{position:fixed;left:10px;bottom:10px;z-index:9998;min-width:44px;min-height:44px;border-radius:999px;border:2px solid #334155;background:#fff;color:#0f172a;font:800 1rem 'Nunito',sans-serif;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-.vb-a11y-btn[aria-pressed="true"]{background:#2563eb;color:#fff}
+.vb-a11y-btn{position:fixed;right:10px;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:9998;min-width:44px;min-height:44px;border-radius:999px;border:2px solid #334155;background:#fff;color:#0f172a;font:800 1rem 'Nunito',sans-serif;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.vb-a11y-btn[aria-pressed="true"],#btn-big-text[aria-pressed="true"]{background:#2563eb!important;color:#fff!important}
 @media (prefers-contrast:more){.vb-a11y-btn{border-width:3px}:where(.tag,.u-desc){color:#000!important}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}

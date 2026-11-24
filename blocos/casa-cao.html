@@ -664,6 +664,7 @@ $('#go').onclick=async()=>{
   const ce=$('#ce');if(ce)ce.onclick=certificate;
  }else{
   $('#msg').textContent=r0.st.stop?(r0.st.err==='luz'?'💡 Aqui não há nenhum candeeiro! Só podes carregar em 💡 quando o cão está em cima de um candeeiro.':r0.st.err==='porta'?'🚪 Aqui não há nenhum botão! Só abres a porta quando o cão está em cima do botão vermelho.':'💥 O cão bateu num obstáculo!'):shownOk?(allOk?'❌ O resultado está certo, mas usaste blocos a mais. Tenta com menos!':'❌ Funciona nesta casa, mas não em todas! O programa tem de servir para qualquer casa.'):'❌ O cão ainda não chegou à tigela com tudo feito. Lê outra vez a missão.';
+  VB.help&&VB.help({game:'casa-cao',cy,lv,kind:r0.st.stop?'obstaculo':shownOk?(allOk?'blocos':'todos'):'seq',cnt,max:L.max,parsePy,BL,conds:CONDS,whiles:WHILES,open:OPEN,host:$('#msg'),showPy:!!CY[cy].py});
   say('Quase! Confere os passos do cão.','sad');beep(200,.3,'sawtooth');
  }
 };

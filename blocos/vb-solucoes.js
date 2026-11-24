@@ -13,7 +13,7 @@ window.VB_SOL={"fabrica": [["soldar()\nentregar()", "soldar()\npintar(\"vermelho
    var t=b.k==='rep'?'repetir '+b.n+'×':b.k==='wh'?'enquanto '+o.whiles.wh.t:o.conds[b.k]?'se '+o.conds[b.k].t:(o.BL[b.k]||{}).t||b.k;
    out.push('  '.repeat(d)+t);if(o.open.indexOf(b.k)>=0)d++});
   return out.join('\n')}
- VB.compare=function(o){try{
+ VB.compare=function(o){try{VB._f=VB._f||{};VB._f[o.game+':'+o.cy+':'+o.lv]=0;
   var py=((window.VB_SOL||{})[o.game]||[])[o.cy];py=py&&py[o.lv];if(!py||!o.host)return;
   var rp=o.parsePy(py),sc=cnt(o.prog),rc=cnt(rp),tip;
   if(!document.getElementById('vbc-css')){var s=document.createElement('style');s.id='vbc-css';
@@ -61,6 +61,33 @@ window.VB_SOL={"fabrica": [["soldar()\nentregar()", "soldar()\npintar(\"vermelho
   o.before.insertAdjacentElement('beforebegin',card);
   card.querySelector('button').addEventListener('click',function(){try{localStorage.setItem(key,'1')}catch(e){}card.remove();o.after&&o.after()});
   o.after&&o.after();
+ }catch(e){}};
+
+ /* ---- ajuda que cresce com os erros: dica à medida (2.º erro), primeiros passos (3.º), solução completa (5.º) ---- */
+ VB._f=VB._f||{};
+ VB.help=function(o){try{
+  var key=o.game+':'+o.cy+':'+o.lv,n=(VB._f[key]=(VB._f[key]||0)+1);
+  var old=o.host&&o.host.querySelector('.vbh');if(old)old.remove();
+  if(n<2||!o.host)return;
+  var py=((window.VB_SOL||{})[o.game]||[])[o.cy];py=py&&py[o.lv];var rp=null;try{rp=py?o.parsePy(py):null}catch(e){}
+  var rc=rp?cnt(rp):null;
+  var tips={
+   blocos:'O teu programa tem '+o.cnt+' blocos'+(o.max?' e o limite desta missão é '+o.max:'')+(rc?'. A solução de referência usa '+rc:'')+'. Procura: passos iguais seguidos (usa «repetir»), dois «se» que podiam ser um só «se … senão», e blocos que nunca chegam a ser usados.',
+   todos:'O jogo experimenta várias situações (cores, defeitos, casas ou pedidos diferentes). O teu programa funciona numa, mas tem de funcionar em todas: usa «se … senão» para o programa decidir sozinho, em vez de fixar a resposta.',
+   seq:'Liga o «Passo a passo» (por baixo da cena) e carrega em «Próximo passo» para ver exatamente onde o programa se afasta do que a missão pede. Confere também a ordem dos blocos e quantas vezes repetes.',
+   obstaculo:'Liga o «Passo a passo» e observa onde o cão bate. Confere se viras para o lado certo (direita ou esquerda) e quantos passos dás antes de virar.'};
+  var tip=tips[o.kind]||tips.seq;
+  if(!document.getElementById('vbh-css')){var st=document.createElement('style');st.id='vbh-css';
+   st.textContent='.vbh{margin:8px 0;background:#ecfdf5;color:#064e3b;border:2px solid #34d399;border-radius:12px;padding:10px;font-size:.92rem;text-align:left}.vbh small{color:#047857}.vbh-b{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.vbh button{background:#059669;color:#fff;border:0;border-radius:10px;padding:6px 12px;font-weight:800;cursor:pointer}.vbh pre{margin:6px 0;padding:8px;background:#fff;border-radius:8px;white-space:pre-wrap;font:600 .85rem/1.45 ui-monospace,Consolas,monospace}.vbh p{margin:6px 0}';document.head.appendChild(st)}
+  var w=document.createElement('div');w.className='vbh';w.setAttribute('role','region');w.setAttribute('aria-label','Ajuda');
+  w.innerHTML='<b>🆘 Precisas de ajuda?</b> <small>Já tentaste '+n+' vezes — errar faz parte de aprender! 💪</small><div class="vbh-b"><button type="button" data-a="tip">💡 Uma ajuda</button>'+(n>=3&&rp?'<button type="button" data-a="start">🔍 Ver os primeiros passos</button>':'')+(n>=5&&rp?'<button type="button" data-a="full">👀 Ver a solução completa</button>':'')+'</div><div class="vbh-o" aria-live="polite"></div>';
+  var out=w.querySelector('.vbh-o');
+  w.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var a=b.getAttribute('data-a');
+   if(a==='tip')out.innerHTML='<p>'+esc(tip)+'</p>';
+   else if(a==='start'){var k=Math.max(1,Math.ceil(rc/2)),c=0,part=[];for(var q=0;q<rp.length&&c<k;q++){part.push(rp[q]);if(rp[q].k!=='end')c++}
+    out.innerHTML='<p>Os primeiros passos da solução (continua tu a partir daqui):</p><pre>'+esc(lines(part,o)+'\n…')+'</pre>'}
+   else if(a==='full')out.innerHTML='<p>Solução de referência ('+rc+' blocos). Percebe cada passo e depois faz tu — há outras soluções certas.</p><pre>'+esc(lines(rp,o))+'</pre>'+(o.showPy?'<details><summary>Python</summary><pre>'+esc(py)+'</pre></details>':'')});
+  o.host.appendChild(w);
  }catch(e){}};
 
 })();

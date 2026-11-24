@@ -648,6 +648,7 @@ $('#go').onclick=async()=>{
  }else{
   const fk=cy+'-'+lv;FAILS[fk]=(FAILS[fk]||0)+1;
   $('#msg').textContent=okSeq?'❌ O resultado está certo, mas usaste blocos a mais. Tenta com menos!':(shownOk?'❌ Funciona neste pedido, mas não em todos! O programa tem de servir para qualquer pedido.':VB.hint(FAILS[fk],nz(expand(e0?{...e0}:null).map(a=>a.k)),nz(L.x?L.x(e0):L.g),k=>k==='P'?'🎁 embrulhar (uma cor)':NAME[k]));
+  VB.help&&VB.help({game:'natal',cy,lv,kind:okSeq?'blocos':shownOk?'todos':'seq',cnt,max:L.max,parsePy,BL,conds:CONDS,whiles:WHILES,open:OPEN,host:$('#msg'),showPy:!!CY[cy].py});
   say('Quase! Confere a ordem e quantas vezes soldas.','sad');beep(200,.3,'sawtooth');
  }
 };

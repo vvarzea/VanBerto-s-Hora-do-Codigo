@@ -6676,15 +6676,17 @@ window.vbApp={get cycle(){return currentCycleKey;},get moves(){return moveCount;
 document.dispatchEvent(new Event('vb-app-ready'));
 }); // end DOMContentLoaded
 
-/* ♿ Letra grande (acessibilidade): botão flutuante "Aa", guardado no navegador */
+/* ♿ Letra maior (acessibilidade): botão «A+» no submenu «⚙️ Mais» do cabeçalho (ao lado do «Aa» de letra fácil de ler); guardado no navegador */
 (function(){
   try{
     const K="vb-letra-grande", root=document.documentElement;
     const on=()=>{ try{return localStorage.getItem(K)==="1";}catch(e){return false;} };
     root.classList.toggle("vb-big-text",on());
-    const b=document.createElement("button"); b.type="button"; b.className="vb-a11y-btn";
-    b.textContent="Aa"; b.title="Letra grande"; b.setAttribute("aria-label","Alternar letra grande"); b.setAttribute("aria-pressed",String(on()));
+    const b=document.createElement("button"); b.type="button";
+    b.textContent="A+ Letra maior"; b.title="Aumentar o tamanho da letra"; b.setAttribute("aria-label","Aumentar o tamanho da letra"); b.setAttribute("aria-pressed",String(on()));
+    const dark=document.getElementById("btn-dark-mode");
+    if(dark&&dark.parentNode){ b.className="btn secondary small"; b.id="btn-big-text"; dark.insertAdjacentElement("afterend",b); }
+    else { b.className="vb-a11y-btn"; b.textContent="A+"; document.body.appendChild(b); }
     b.addEventListener("click",()=>{ const v=!root.classList.contains("vb-big-text"); root.classList.toggle("vb-big-text",v); b.setAttribute("aria-pressed",String(v)); try{localStorage.setItem(K,v?"1":"0");}catch(e){} });
-    document.body.appendChild(b);
   }catch(e){}
 })();
