@@ -246,7 +246,15 @@ function arm(x,z,flip,k){
  {const led=new THREE.Mesh(new THREE.SphereGeometry(.07,10,8),new THREE.MeshBasicMaterial({color:0x2fe26c}));led.position.set(0,1.45,.2);p2.add(led);window.VBA&&VBA.glow(p2,0,1.45,.2,0x2fe26c,.5,.6)}
  const p3=new THREE.Group();p3.position.y=1.5;p2.add(p3);ball(.2,steel,p3);cyl(.1,.07,.55,steel,p3).position.y=.3;
  const tip=new THREE.Object3D();tip.position.y=.62;p3.add(tip);
- const a={p1,p2,p3,tip};poseArms([a],k||0);return a;
+ /* ferramentas: maçarico de soldar (arco azul) e pistola de pintura (bico com cor); só uma aparece de cada vez */
+ const torch=new THREE.Group();torch.visible=false;p3.add(torch);
+ cyl(.07,.07,.3,dark,torch).position.y=.77;cyl(.1,.025,.22,steel,torch).position.y=.98;
+ const arc=new THREE.Mesh(new THREE.SphereGeometry(.08,10,8),new THREE.MeshBasicMaterial({color:0xcfe8ff}));arc.position.y=1.12;torch.add(arc);
+ const gun=new THREE.Group();gun.visible=false;p3.add(gun);
+ cyl(.11,.11,.3,steel,gun).position.y=.77;cyl(.07,.03,.2,dark,gun).position.y=.98;
+ const capM=new THREE.MeshBasicMaterial({color:0xffffff});ball(.06,capM,gun).position.y=1.1;
+ const nz=new THREE.Object3D();nz.position.y=1.14;p3.add(nz);
+ const a={p1,p2,p3,tip,g,y0:flip?Math.PI:0,torch,gun,arc,capM,nz};poseArms([a],k||0);return a;
 }
 const ST=SX.map(x=>({x,arms:[arm(x,-2.6,false),arm(x,2.6,true)]}));
 [-9,-4,3,9].forEach((x,i)=>{arm(x,-5.8,false,.2+i*.12);box(2.2,.7,1.1,M(0x7c828f,.5,.5),x+1.6,.9,-5)});
@@ -294,17 +302,39 @@ let last=performance.now(),fr=0,acc=0,camX=-4;
 const T=(f,ms)=>new Promise(r=>{const t0=performance.now();(function l(){const k=Math.min(1,(performance.now()-t0)*SPD/ms);f(k);k<1?requestAnimationFrame(l):r()})()});
 function lerp(a,b,k){return a+(b-a)*k}
 async function goTo(x){const a=car.position.x;if(a===x)return;await T(k=>{const nx=lerp(a,x,k),dx=nx-car.position.x;car.position.x=nx;wheels.forEach(w=>w.rotation.z-=dx/.3)},Math.abs(x-a)*150+80)}
+/* poses próprias: soldar = braço baixo e junto ao carro; pintar = braço mais alto e esticado; retocar = braço curto e preciso; rodas = braço junto ao chão */
+const POSE={weld:[1.1,1.05,.7],paint:[.6,.45,.35],touch:[.95,.95,.9],wheel:[.7,.6,.85]};
+function poseTo(arms,P,k){arms.forEach(a=>{a.p1.rotation.x=lerp(REST[0],P[0],k);a.p2.rotation.x=lerp(REST[1],P[1],k);a.p3.rotation.x=lerp(REST[2],P[2],k)})}
+const sweepSet=(st,off)=>st.arms.forEach(a=>a.g.rotation.y=a.y0+(a.y0?-1:1)*off);
 async function work(st,colorHex,mode){
- beep(mode==='paint'?440:880,.6,mode==='paint'?'sine':'sawtooth');
- await T(k=>poseArms(st.arms,k),400);
- pm.color.set(colorHex);tl.color.set(colorHex);
- const from=bodyMat.color.clone(),to=new THREE.Color(colorHex);
+ const weld=mode==='weld',touch=mode==='touch',P=POSE[mode],dur=weld?1000:touch?650:1200;
+ st.arms.forEach(a=>{a.torch.visible=weld;a.gun.visible=!weld;a.capM.color.set(colorHex)});
+ if(weld)beep(160,.9,'sawtooth');else if(touch)beep(700,.12,'sine');else beep(520,.9,'sine');
+ await T(k=>poseTo(st.arms,P,k),400);
+ pm.color.set(weld?0xffc04d:colorHex);tl.color.set(weld?0xbfe0ff:colorHex);
+ const from=bodyMat.color.clone(),to=new THREE.Color(colorHex);let lb=0,off=0;
  await T(k=>{
-  if(!light){st.arms.forEach(a=>{a.tip.getWorldPosition(tv);emit(tv,mode==='paint'?2:4,mode==='paint')});tl.position.set(st.x,1.4,0);tl.intensity=2+Math.random()*3}
+  const now=performance.now();
+  if(weld){ /* solda ponto a ponto: pára, faísca, salta para o ponto seguinte; arco a piscar */
+   const q=k*5,n=Math.min(4,Math.floor(q)),f=q-n;off=lerp(-.35,.35,Math.min(1,(n+Math.min(1,f*3))/4));
+   st.arms.forEach(a=>{a.p3.rotation.x=POSE.weld[2]+(Math.random()-.5)*.1;a.arc.visible=Math.random()>.25});
+   if(now-lb>85){beep(1100+Math.random()*900,.05,'sawtooth');lb=now}
+  }else if(touch){ /* retoca com toques curtos e pequenos */
+   off=0;st.arms.forEach(a=>a.p3.rotation.x=POSE.touch[2]+Math.sin(k*Math.PI*6)*.28);
+  }else{ /* pinta com uma passagem larga e contínua, de trás para a frente */
+   off=Math.sin(k*Math.PI*2)*.42;
+  }
+  sweepSet(st,off);
+  if(!light){st.arms.forEach(a=>{a.nz.getWorldPosition(tv);
+    if(weld){if(Math.random()<.6)emit(tv,6,false)}else emit(tv,touch?1:3,true)});
+   tl.position.set(st.x+off*2,1.4,0);
+   tl.intensity=weld?(Math.random()<.3?0:3+Math.random()*5):touch?.9:1.6}
   if(mode==='paint')bodyMat.color.copy(from).lerp(to,k);
- },800);
+ },dur);
  tl.intensity=0;
- await T(k=>poseArms(st.arms,1-k),400);
+ if(touch){beep(1320,.12,'sine');beep(1760,.15,'sine',.1)}
+ await T(k=>{poseTo(st.arms,P,1-k);sweepSet(st,off*(1-k))},400);
+ st.arms.forEach(a=>{a.torch.visible=false;a.gun.visible=false;a.g.rotation.y=a.y0});
 }
 async function motor(st){
   beep(300,.5,'square');await T(k=>poseArms(st.arms,k),400);
@@ -319,16 +349,18 @@ async function motor(st){
 }
 async function wheel(st){
  beep(500,.2);const w=wheels.find(x=>!x.visible);
- await T(k=>poseArms(st.arms,k),300);
- if(w){w.visible=true;await T(k=>w.position.y=lerp(1.6,.3,k*k),350)}
- await T(k=>poseArms(st.arms,1-k),300);
+ await T(k=>poseTo(st.arms,POSE.wheel,k),300);
+ if(w){w.visible=true;await T(k=>w.position.y=lerp(1.6,.3,k*k),350);
+  beep(150,.1,'square');for(let i=0;i<4;i++)beep(1000,.04,'square',i*.11);
+  await T(k=>{w.rotation.z-=.4*(1-k);st.arms.forEach(a=>a.p3.rotation.x=POSE.wheel[2]+Math.sin(k*38)*.06)},450)}
+ await T(k=>poseTo(st.arms,POSE.wheel,1-k),300);
 }
 async function stn(i,fn){setSt(i,'on');hudState(STN[i]);await goTo(SX[i]);await fn(ST[i]);setSt(i,'ok')}
 const paint=(i,c)=>stn(1,st=>work(st,c,'paint'));
 const ACT={
  S:async()=>{await stn(0,st=>work(st,0xffd34d,'weld'));if(ENV&&ENV.pecas!=null){const v=pcs.children.filter(c=>c.visible);if(v.length)v[0].visible=false}},
  R:()=>paint(1,0xe5484d),B:()=>paint(1,0x3e63dd),G:()=>paint(1,0x4c9a2a),Y:()=>paint(1,0xf5c518),
- M:()=>stn(2,motor),X:()=>stn(1,st=>work(st,bodyMat.color.getHex(),'weld')),W:()=>stn(3,wheel),
+ M:()=>stn(2,motor),X:()=>stn(1,st=>work(st,bodyMat.color.getHex(),'touch')),W:()=>stn(3,wheel),
  E:async()=>{hudState('Entrega');await goTo(11.5);beep(660,.15);beep(880,.2,'square',.15);done++;$('#h-done').textContent=done;tStop();hudState('Carro entregue ✅')}
 };
 
