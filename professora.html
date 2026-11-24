@@ -474,6 +474,28 @@ andar()
 virar_direita()
 andar()
 andar()
+andar()</pre></div></div><p class="muted">7 blocos (conta sem o «fim»). ⭐⭐⭐ com 7 ou menos; ⭐⭐ até 9.</p></details><details><summary>Missão 9 — <span style="font-weight:600">Acende o candeeiro e depois vai até à tigela, que está no fim da curva.</span></summary><div class="sol"><div><b>Blocos</b><pre>🐕 andar
+🐕 andar
+💡 luz
+↻ virar à direita
+🐕 andar
+🐕 andar</pre></div><div><b>Python</b><pre>andar()
+andar()
+luz()
+virar_direita()
+andar()
+andar()</pre></div></div><p class="muted">6 blocos (conta sem o «fim»). ⭐⭐⭐ com 6 ou menos; ⭐⭐ até 8.</p></details><details><summary>Missão 10 — <span style="font-weight:600">Há um sofá no caminho! Contorna-o, acende o candeeiro e vai até à tigela.</span></summary><div class="sol"><div><b>Blocos</b><pre>↻ virar à direita
+🐕 andar
+↺ virar à esquerda
+🐕 andar
+💡 luz
+🐕 andar
+🐕 andar</pre></div><div><b>Python</b><pre>virar_direita()
+andar()
+virar_esquerda()
+andar()
+luz()
+andar()
 andar()</pre></div></div><p class="muted">7 blocos (conta sem o «fim»). ⭐⭐⭐ com 7 ou menos; ⭐⭐ até 9.</p></details><h3 style="margin:12px 0 4px;font-size:1rem">2.º Ciclo</h3><details><summary>Missão 1 — <span style="font-weight:600">Leva o cão até à tigela. Dica: usa o repetir!</span></summary><div class="sol"><div><b>Blocos</b><pre>🔁 repetir 5×
   🐕 andar</pre></div><div><b>Python</b><pre>for i in range(5):
     andar()</pre></div></div><p class="muted">2 blocos (conta sem o «fim»). ⭐⭐⭐ com 2 ou menos; ⭐⭐ até 3.</p></details><details><summary>Missão 2 — <span style="font-weight:600">Acende o candeeiro e continua até à tigela.</span></summary><div class="sol"><div><b>Blocos</b><pre>🐕 andar
@@ -516,7 +538,19 @@ andar()</pre></div></div><p class="muted">5 blocos (conta sem o «fim»). ⭐⭐
     andar()
     andar()
     luz()
-andar()</pre></div></div><p class="muted">5 blocos (conta sem o «fim»). ⭐⭐⭐ com 5 ou menos; ⭐⭐ até 7.</p></details><h3 style="margin:12px 0 4px;font-size:1rem">3.º Ciclo</h3><details><summary>Missão 1 — <span style="font-weight:600">Acende os 2 candeeiros e termina na tigela.</span></summary><div class="sol"><div><b>Blocos</b><pre>🔁 repetir 2×
+andar()</pre></div></div><p class="muted">5 blocos (conta sem o «fim»). ⭐⭐⭐ com 5 ou menos; ⭐⭐ até 7.</p></details><details><summary>Missão 7 — <span style="font-weight:600">Acende os 3 candeeiros seguidos e vai até à tigela. Dica: o que se repete?</span></summary><div class="sol"><div><b>Blocos</b><pre>🐕 andar
+🔁 repetir 3×
+  💡 luz
+  🐕 andar</pre></div><div><b>Python</b><pre>andar()
+for i in range(3):
+    luz()
+    andar()</pre></div></div><p class="muted">4 blocos (conta sem o «fim»). ⭐⭐⭐ com 4 ou menos; ⭐⭐ até 5.</p></details><details><summary>Missão 8 — <span style="font-weight:600">Chega à tigela repetindo duas vezes o mesmo padrão: andar, andar e virar à direita.</span></summary><div class="sol"><div><b>Blocos</b><pre>🔁 repetir 2×
+  🐕 andar
+  🐕 andar
+  ↻ virar à direita</pre></div><div><b>Python</b><pre>for i in range(2):
+    andar()
+    andar()
+    virar_direita()</pre></div></div><p class="muted">4 blocos (conta sem o «fim»). ⭐⭐⭐ com 4 ou menos; ⭐⭐ até 5.</p></details><h3 style="margin:12px 0 4px;font-size:1rem">3.º Ciclo</h3><details><summary>Missão 1 — <span style="font-weight:600">Acende os 2 candeeiros e termina na tigela.</span></summary><div class="sol"><div><b>Blocos</b><pre>🔁 repetir 2×
   🐕 andar
   🐕 andar
   💡 luz</pre></div><div><b>Python</b><pre>for i in range(2):
@@ -568,7 +602,33 @@ andar()</pre></div></div><p class="muted">6 blocos (conta sem o «fim»). ⭐⭐
     andar()
 abrir_porta()
 for i in range(3):
-    andar()</pre></div></div><p class="muted">5 blocos (conta sem o «fim»). ⭐⭐⭐ com 5 ou menos; ⭐⭐ até 7.</p></details><h3 style="margin:12px 0 4px;font-size:1rem">Secundário</h3><details><summary>Missão 1 — <span style="font-weight:600">O cão pode começar em sítios diferentes. Faz com que chegue sempre à tigela, no fim da sala. Usa «enquanto».</span></summary><div class="sol"><div><b>Blocos</b><pre>🔄 enquanto caminho livre
+    andar()</pre></div></div><p class="muted">5 blocos (conta sem o «fim»). ⭐⭐⭐ com 5 ou menos; ⭐⭐ até 7.</p></details><details><summary>Missão 7 — <span style="font-weight:600">Duas portas e um candeeiro! O candeeiro está em cima do botão da segunda porta. Acende-o, abre as portas e chega à tigela.</span></summary><div class="sol"><div><b>Blocos</b><pre>🐕 andar
+🚪 abrir porta
+🐕 andar
+🐕 andar
+💡 luz
+🚪 abrir porta
+🐕 andar
+🐕 andar</pre></div><div><b>Python</b><pre>andar()
+abrir_porta()
+andar()
+andar()
+luz()
+abrir_porta()
+andar()
+andar()</pre></div></div><p class="muted">8 blocos (conta sem o «fim»). ⭐⭐⭐ com 8 ou menos; ⭐⭐ até 10.</p></details><details><summary>Missão 8 — <span style="font-weight:600">Acende os 2 candeeiros seguidos, abre a porta e chega à tigela.</span></summary><div class="sol"><div><b>Blocos</b><pre>🐕 andar
+🔁 repetir 2×
+  💡 luz
+  🐕 andar
+🚪 abrir porta
+🐕 andar
+🐕 andar</pre></div><div><b>Python</b><pre>andar()
+for i in range(2):
+    luz()
+    andar()
+abrir_porta()
+andar()
+andar()</pre></div></div><p class="muted">7 blocos (conta sem o «fim»). ⭐⭐⭐ com 7 ou menos; ⭐⭐ até 9.</p></details><h3 style="margin:12px 0 4px;font-size:1rem">Secundário</h3><details><summary>Missão 1 — <span style="font-weight:600">O cão pode começar em sítios diferentes. Faz com que chegue sempre à tigela, no fim da sala. Usa «enquanto».</span></summary><div class="sol"><div><b>Blocos</b><pre>🔄 enquanto caminho livre
   🐕 andar</pre></div><div><b>Python</b><pre>while caminho_livre():
     andar()</pre></div></div><p class="muted">2 blocos (conta sem o «fim»). ⭐⭐⭐ com 2 ou menos; ⭐⭐ até 3. Limite da missão: <b>3</b> blocos. O jogo testa várias situações (3): a solução tem de servir para todas.</p></details><details><summary>Missão 2 — <span style="font-weight:600">Acende os 3 candeeiros e termina na tigela.</span></summary><div class="sol"><div><b>Blocos</b><pre>🔁 repetir 5×
   🐕 andar
@@ -604,7 +664,27 @@ abrir_porta()
 for i in range(4):
     andar()
     if luz_apagada():
-        luz()</pre></div></div><p class="muted">6 blocos (conta sem o «fim»). ⭐⭐⭐ com 6 ou menos; ⭐⭐ até 8. Limite da missão: <b>7</b> blocos. O jogo testa várias situações (4): a solução tem de servir para todas.</p></details></div></details><details id="rob-natal"><summary>🎅 Fábrica do Pai Natal</summary><div style="margin-top:8px"><h3 style="margin:12px 0 4px;font-size:1rem">1.º Ciclo</h3><details><summary>Missão 1 — <span style="font-weight:600">Faz um brinquedo e põe-no no trenó.</span></summary><div class="sol"><div><b>Blocos</b><pre>🔨 fazer brinquedo
+        luz()</pre></div></div><p class="muted">6 blocos (conta sem o «fim»). ⭐⭐⭐ com 6 ou menos; ⭐⭐ até 8. Limite da missão: <b>7</b> blocos. O jogo testa várias situações (4): a solução tem de servir para todas.</p></details><details><summary>Missão 7 — <span style="font-weight:600">O cão pode começar em sítios diferentes da fila de cima. Faz com que chegue sempre à tigela, no canto de baixo à direita (usa «enquanto» duas vezes).</span></summary><div class="sol"><div><b>Blocos</b><pre>🔄 enquanto caminho livre
+  🐕 andar
+↻ virar à direita
+🔄 enquanto caminho livre
+  🐕 andar</pre></div><div><b>Python</b><pre>while caminho_livre():
+    andar()
+virar_direita()
+while caminho_livre():
+    andar()</pre></div></div><p class="muted">5 blocos (conta sem o «fim»). ⭐⭐⭐ com 5 ou menos; ⭐⭐ até 7. Limite da missão: <b>5</b> blocos. O jogo testa várias situações (3): a solução tem de servir para todas.</p></details><details><summary>Missão 8 — <span style="font-weight:600">O corredor de cima acaba numa parede e os candeeiros podem estar acesos ou apagados. Acende só os apagados e depois desce até à tigela (usa «enquanto» e «se»).</span></summary><div class="sol"><div><b>Blocos</b><pre>🔄 enquanto caminho livre
+  🐕 andar
+  🔀 se luz apagada aqui
+    💡 luz
+↻ virar à direita
+🔄 enquanto caminho livre
+  🐕 andar</pre></div><div><b>Python</b><pre>while caminho_livre():
+    andar()
+    if luz_apagada():
+        luz()
+virar_direita()
+while caminho_livre():
+    andar()</pre></div></div><p class="muted">7 blocos (conta sem o «fim»). ⭐⭐⭐ com 7 ou menos; ⭐⭐ até 9. Limite da missão: <b>8</b> blocos. O jogo testa várias situações (4): a solução tem de servir para todas.</p></details></div></details><details id="rob-natal"><summary>🎅 Fábrica do Pai Natal</summary><div style="margin-top:8px"><h3 style="margin:12px 0 4px;font-size:1rem">1.º Ciclo</h3><details><summary>Missão 1 — <span style="font-weight:600">Faz um brinquedo e põe-no no trenó.</span></summary><div class="sol"><div><b>Blocos</b><pre>🔨 fazer brinquedo
 🛷 pôr no trenó</pre></div><div><b>Python</b><pre>fazer_brinquedo()
 por_no_treno()</pre></div></div><p class="muted">2 blocos (conta sem o «fim»). ⭐⭐⭐ com 2 ou menos; ⭐⭐ até 3.</p></details><details><summary>Missão 2 — <span style="font-weight:600">Faz um brinquedo, embrulha-o em papel vermelho e põe-no no trenó.</span></summary><div class="sol"><div><b>Blocos</b><pre>🔨 fazer brinquedo
 🎁 papel vermelho

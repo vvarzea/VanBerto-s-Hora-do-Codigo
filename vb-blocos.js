@@ -4,7 +4,7 @@
   var GAMES={
     fabrica:{title:'🏭 Fábrica de Carros',src:'blocos/fabrica.html',key:'vbf',max:126},
     natal:{title:'🎅 Fábrica do Pai Natal',src:'blocos/natal.html',key:'vbn',max:117},
-    casa:{title:'🐕 Cão Robô',src:'blocos/casa-cao.html',key:'vbc',max:78}
+    casa:{title:'🐕 Cão Robô',src:'blocos/casa-cao.html',key:'vbc',max:102}
   };
   var ov=null,fr=null,INLINE=window.VB_BLOCOS_INLINE||null;
   function build(){
