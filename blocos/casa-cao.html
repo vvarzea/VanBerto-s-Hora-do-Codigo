@@ -28,6 +28,8 @@
 <div class="row">
 <button id="go">▶ Executar</button>
 <button id="clr">↺ Recomeçar</button>
+<button id="rst">↩ Repor cena</button>
+<button id="era" style="color:#b91c1c;border-color:#b91c1c;box-shadow:0 3px 0 #b91c1c">🗑 Apagar missões feitas</button>
 <button id="pyb">🐍 Python</button>
 </div>
 <div id="msg"></div>
@@ -339,7 +341,8 @@ $('#lt').onchange=e=>setLight(e.target.checked);
 addEventListener('resize',size);size();
 (function loop(){requestAnimationFrame(loop);const n=performance.now();acc+=n-last;last=n;if(++fr===90&&!light&&acc/90>45)setLight(true,true);dogUpdate();const P=window.VBA&&VBA.post.begin(R);R.render(S,cam);if(P)VBA.post.end(R)})();
 /* animação */
-const T=(f,ms)=>new Promise(r=>{const t0=performance.now();(function l(){const k=Math.min(1,(performance.now()-t0)*SPD/ms);f(k);k<1?requestAnimationFrame(l):r()})()});
+let stopReq=false; /* o aluno carregou em «Parar»: as animações acabam logo e o programa pára no passo seguinte */
+const T=(f,ms)=>new Promise(r=>{const t0=performance.now();(function l(){const k=stopReq?1:Math.min(1,(performance.now()-t0)*SPD/ms);f(k);k<1?requestAnimationFrame(l):r()})()});
 const lerp=(a,b,k)=>a+(b-a)*k;
 const swing=k=>{const s=Math.sin(k*Math.PI*4);dogSpr.position.y=k>=1?0:Math.abs(s)*.16;dogRoll=k>=1?0:s*.07;walkK=k>=1?0:k};
 const hop=ms=>T(k=>dog.position.y=.03+Math.sin(k*Math.PI)*.5,ms||300);
@@ -649,6 +652,14 @@ const syncProg=()=>{prog=ED.getProg().prog};
 function render(){ED.load(prog);updUI()}
 ED.onChange(g=>{prog=g.prog;updUI()});
 $('#clr').onclick=()=>{if(running)return;clear();render();preview();say('Tudo limpo! Começa de novo. 🙂')};
+const rstLabel=()=>{$('#rst').textContent=running?'⏹ Parar':'↩ Repor cena'};
+$('#rst').onclick=()=>{if(running){stopReq=true;const b=document.getElementById('vb-step');if(b&&b.style.display!=='none')b.click();return}ED.highlight(null);pyOn(null);preview();$('#msg').textContent='';say('Cena reposta! Os teus blocos continuam aqui. 🙂')};
+$('#era').onclick=()=>{if(running)return;
+ const n=LV.filter((_,i)=>P.d[cy+'-'+i]).length;
+ if(!n){say('Ainda não fizeste nenhuma missão deste ciclo. 🙂');return}
+ if(!confirm('Apagar as '+n+' missões que já fizeste neste ciclo ('+CY[cy].n+')? A tua evolução nos certificados fica registada.'))return;
+ LV.forEach((_,i)=>{const k=cy+'-'+i;delete P.d[k];if(P.l)delete P.l[k]});
+ if(P.c)delete P.c[cy];save();lv=0;clear();levels();render();preview();$('#msg').textContent='';say('Missões apagadas! Podes recomeçar este ciclo do zero. 🙂')};
 $('#pyb').onclick=()=>{const p=$('#pyw');p.style.display=p.style.display==='block'?'none':'block';ED.resize()};
 $('#pye').onclick=()=>{const on=$('#py').style.display==='block';$('#py').style.display=on?'none':'block';$('#pyeb').style.display=on?'none':'flex';$('#pyv').style.display=on?'block':'none';$('#pye').textContent=on?'✏️ Editar':'👁 Ver'};
 $('#pya').onclick=()=>{
@@ -679,13 +690,15 @@ $('#go').onclick=async()=>{
  syncProg();
  const L=LV[lv],tests=L.tests||[{}],E0=mk(L,tests[Math.floor(Math.random()*tests.length)]),r0=simulate(E0),acts=r0.out;
  if(!acts.length){say('Junta primeiro alguns blocos! 🙂');return}
- running=true;ED.lock(true);$('#msg').textContent='';window.__E=E0;show(E0);
+ stopReq=false;running=true;ED.lock(true);rstLabel();$('#msg').textContent='';window.__E=E0;show(E0);
  const off=()=>{ED.highlight(null);pyOn(null)};
  for(let i=0;i<acts.length;i++){
+  if(stopReq)break;
   off();ED.highlight(acts[i].i);pyOn(acts[i].i);if(document.getElementById('stp')&&document.getElementById('stp').checked)await VB.step();
   $('#msg').textContent='Passo '+(i+1)+' de '+acts.length;await play(acts[i]);
  }
- off();running=false;ED.lock(false);
+ if(stopReq){stopReq=false;off();running=false;ED.lock(false);preview();rstLabel();$('#msg').textContent='';say('Parei! Mexe nos blocos e tenta outra vez. 🙂');return}
+ off();running=false;ED.lock(false);rstLabel();
  const cnt=prog.filter(b=>b.k!=='end').length;
  const allOk=tests.every(t=>{const E=mk(L,t),r=simulate(E);return !r.st.stop&&won(E,r.st)});
  const shownOk=!r0.st.stop&&won(E0,r0.st),ok=allOk&&(!L.max||cnt<=L.max);

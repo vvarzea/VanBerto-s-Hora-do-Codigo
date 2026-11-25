@@ -14,7 +14,7 @@ window.VBEditor=(function(){
    this.setPreviousStatement(true,null);this.setNextStatement(true,null);this.setColour(cfg.blocks[k].c);this.setTooltip(cfg.blocks[k].tip||'')}}});
   B.Blocks.vb_start={init:function(){
    this.appendDummyInput().appendField(cfg.startText||'quando carregar em ▶ Executar');
-   this.setNextStatement(true,null);this.setColour(cfg.startColor||'#b08a2a');this.setDeletable(false);this.setMovable(false);this.setTooltip('O programa começa aqui.')}};
+   this.setNextStatement(true,null);this.setColour(cfg.startColor||'#b08a2a');this.setDeletable(false);this.setMovable(false);this.setTooltip('O programa começa aqui. Clica neste bloco para executar ▶')}};
   B.Blocks.vb_rep={init:function(){
    this.appendDummyInput().appendField('repete').appendField(new B.FieldNumber(2,1,cfg.repMax||5,1),'N').appendField('vezes');
    this.appendStatementInput('DO');this.setPreviousStatement(true,null);this.setNextStatement(true,null);this.setColour(cfg.repColor||'#8e4ec6');this.setTooltip('Repete os blocos que estão lá dentro.')}};
@@ -45,6 +45,7 @@ window.VBEditor=(function(){
   function ensureStart(){
    if(startBlock&&!startBlock.disposed)return;
    startBlock=ws.newBlock('vb_start');startBlock.initSvg();startBlock.render();startBlock.moveBy(14,14);
+   try{startBlock.getSvgRoot().style.setProperty('cursor','pointer','important')}catch(e){} /* o bloco inicial também é um botão */
   }
   function init(){
    if(ws)return;
@@ -54,6 +55,9 @@ window.VBEditor=(function(){
     move:{scrollbars:true,drag:true,wheel:true},grid:{spacing:26,length:2,colour:'#e4d9b8',snap:false}});
    ensureStart();
    ws.addChangeListener(B.Events.disableOrphans);
+   /* clicar no bloco «quando carregar em ▶ Executar» faz o mesmo que o botão ▶ Executar */
+   ws.addChangeListener(e=>{if(e.type!==(B.Events.CLICK||'click')||(e.targetType&&e.targetType!=='block'))return;
+    const b=ws.getBlockById(e.blockId);if(b&&b.type==='vb_start'){const go=document.getElementById('go');if(go)go.click()}});
    ws.addChangeListener(e=>{
     if(loading||e.isUiEvent)return;
     if(e.type===B.Events.BLOCK_CREATE||e.type===B.Events.BLOCK_DELETE||e.type===B.Events.BLOCK_MOVE||e.type===B.Events.BLOCK_CHANGE){

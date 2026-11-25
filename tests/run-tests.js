@@ -28,7 +28,7 @@ for(const m of pr.matchAll(/⭐⭐⭐ com (\d+) ou menos; ⭐⭐ até (\d+)/g)){
 ok(n>0&&bad===0,`professora.html: ${n} limiares coerentes com a regra`);
 
 // 4) service worker e versões
-ok(/vanbertos-v66/.test(R('sw.js')),'sw.js: cache atualizada');
+ok(/vanbertos-v69/.test(R('sw.js')),'sw.js: cache atualizada');
 for(const g of ['fabrica','casa-cao','natal']) ok(R(`blocos/${g}.html`).includes('vb-solucoes.js')&&R(`blocos/${g}.html`).includes('VB.compare'),`${g}: carrega as soluções e a comparação`);
 ok(R('sw.js').includes('vb-solucoes.js'),'sw.js: guarda vb-solucoes.js offline');
 console.log('\nPara validar as soluções no motor real dos jogos:  python3 tests/verify-missoes.py');
@@ -47,4 +47,7 @@ for(const g of ['fabrica','casa-cao','natal']){const h=R(`blocos/${g}.html`);ok(
 
 // 6) os scripts dentro dos HTML dos jogos têm de compilar (apanha erros de sintaxe e nomes repetidos, como «const H» duas vezes)
 for(const g of ['fabrica','casa-cao','natal']){let good=true,msg='';for(const m of R(`blocos/${g}.html`).matchAll(/<script(?![^>]*src)[^>]*>([\s\S]*?)<\/script>/g)){try{new Function(m[1])}catch(e){good=false;msg=e.message}}ok(good,`${g}: o código do jogo compila sem erros${msg?' ('+msg+')':''}`)}
+for(const g of ['fabrica','casa-cao','natal']){const h=R(`blocos/${g}.html`);ok(h.includes('id="rst"')&&h.includes('stopReq')&&h.includes('rstLabel'),`${g}: botão «Repor cena / Parar»`)}
+for(const g of ['fabrica','casa-cao','natal'])ok(R(`blocos/${g}.html`).includes('id="era"'),`${g}: botão «Apagar missões feitas»`)
+ok(R('blocos/vb-editor.js').includes("b.type==='vb_start'")&&R('blocos/vb-editor.js').includes("getElementById('go')"),'editor: clicar no bloco inicial executa o programa')
 process.exit(fail?1:0);

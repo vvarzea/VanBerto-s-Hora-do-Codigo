@@ -68,3 +68,5 @@ Para te orientares, as secções estão assinaladas com cabeçalhos `/* ===== NO
 - As estrelas mostradas em cada botão de missão continuam a ser o melhor resultado (`P.d`).
 - Ao acrescentar missões: põe-nas no fim do ciclo, atualiza `OPT`, a solução em `vb-solucoes.js`, a `professora.html` e o total de estrelas em `vb-blocos.js`. Quem já tinha o certificado do ciclo não o perde.
 - `node tests/verificar-missoes.js` verifica (sem navegador) que a solução de cada missão a resolve, cumpre o limite e bate certo com o `OPT`. Já corre dentro de `node tests/run-tests.js`.
+- «🗑 Apagar missões feitas» apaga as estrelas (`P.d`, `P.l`) e o certificado (`P.c`) **do ciclo aberto**, depois de confirmar. A evolução (`P.h`) mantém-se, para o aluno continuar a ver se melhora quando repete o ciclo.
+- «↩ Repor cena» / «⏹ Parar» repõem a cena sem apagar blocos e interrompem um programa a correr (`stopReq`).

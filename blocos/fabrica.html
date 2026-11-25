@@ -28,6 +28,8 @@
 <div class="row">
 <button id="go">▶ Executar</button>
 <button id="clr">↺ Recomeçar</button>
+<button id="rst">↩ Repor cena</button>
+<button id="era" style="color:#b91c1c;border-color:#b91c1c;box-shadow:0 3px 0 #b91c1c">🗑 Apagar missões feitas</button>
 <button id="pyb">🐍 Python</button>
 </div>
 <div id="msg"></div>
@@ -307,7 +309,8 @@ let last=performance.now(),fr=0,acc=0,camX=-4;
  stepP(Math.min(d,50)/1000);drawScene()})();
 
 /* ---------- animação ---------- */
-const T=(f,ms)=>new Promise(r=>{const t0=performance.now();(function l(){const k=Math.min(1,(performance.now()-t0)*SPD/ms);f(k);k<1?requestAnimationFrame(l):r()})()});
+let stopReq=false; /* o aluno carregou em «Parar»: as animações acabam logo e o programa pára no passo seguinte */
+const T=(f,ms)=>new Promise(r=>{const t0=performance.now();(function l(){const k=stopReq?1:Math.min(1,(performance.now()-t0)*SPD/ms);f(k);k<1?requestAnimationFrame(l):r()})()});
 function lerp(a,b,k){return a+(b-a)*k}
 async function goTo(x){const a=car.position.x;if(a===x)return;await T(k=>{const nx=lerp(a,x,k),dx=nx-car.position.x;car.position.x=nx;wheels.forEach(w=>w.rotation.z-=dx/.3)},Math.abs(x-a)*150+80)}
 /* poses próprias: soldar = braço baixo e junto ao carro; pintar = braço mais alto e esticado; retocar = braço curto e preciso; rodas = braço junto ao chão */
@@ -457,6 +460,14 @@ const syncProg=()=>{prog=ED.getProg().prog};
 function render(){ED.load(prog);updUI()}
 ED.onChange(g=>{prog=g.prog;updUI()});
 $('#clr').onclick=()=>{if(running)return;clear();render();reset();say('Tudo limpo! Começa de novo. 🙂')};
+const rstLabel=()=>{$('#rst').textContent=running?'⏹ Parar':'↩ Repor cena'};
+$('#rst').onclick=()=>{if(running){stopReq=true;const b=document.getElementById('vb-step');if(b&&b.style.display!=='none')b.click();return}ED.highlight(null);pyOn(null);reset();$('#msg').textContent='';say('Cena reposta! Os teus blocos continuam aqui. 🙂')};
+$('#era').onclick=()=>{if(running)return;
+ const n=LV.filter((_,i)=>P.d[cy+'-'+i]).length;
+ if(!n){say('Ainda não fizeste nenhuma missão deste ciclo. 🙂');return}
+ if(!confirm('Apagar as '+n+' missões que já fizeste neste ciclo ('+CY[cy].n+')? A tua evolução nos certificados fica registada.'))return;
+ LV.forEach((_,i)=>{const k=cy+'-'+i;delete P.d[k];if(P.l)delete P.l[k];if(typeof FAILS!=='undefined')FAILS[k]=0});
+ if(P.c)delete P.c[cy];save();lv=0;clear();levels();render();reset();$('#msg').textContent='';say('Missões apagadas! Podes recomeçar este ciclo do zero. 🙂')};
 $('#pyb').onclick=()=>{const p=$('#pyw');p.style.display=p.style.display==='block'?'none':'block';ED.resize()};
 $('#pye').onclick=()=>{const on=$('#py').style.display==='block';$('#py').style.display=on?'none':'block';$('#pyeb').style.display=on?'none':'flex';$('#pyv').style.display=on?'block':'none';$('#pye').textContent=on?'✏️ Editar':'👁 Ver'};
 $('#pya').onclick=()=>{
@@ -687,14 +698,16 @@ $('#go').onclick=async()=>{
  const acts=expand(e0?{...e0}:null);
  if(!acts.length){say('Junta primeiro alguns blocos! 🙂');return}
  if(acts.length>40){say('Programa muito grande! Usa o repetir com menos vezes.','sad');return}
- running=true;ED.lock(true);$('#msg').textContent='';reset();tStart();showEnv(e0?{...e0}:null);
+ stopReq=false;running=true;ED.lock(true);rstLabel();$('#msg').textContent='';reset();tStart();showEnv(e0?{...e0}:null);
  const lab=(e0?[e0.defeito!==undefined?(e0.defeito?'🔍 Controlo de qualidade: defeito na pintura!':'🔍 Controlo de qualidade: sem defeitos'):'',e0.cor?'📋 Encomenda '+(e0.cor==='B'?'azul':e0.cor==='Y'?'amarela':'vermelha'):'',e0.pecas!=null?'🔩 Peças por soldar: '+e0.pecas:'']:[]).filter(Boolean).map(t=>t+' · ').join('');
  const off=()=>{ED.highlight(null);pyOn(null)};
  for(let i=0;i<acts.length;i++){
+  if(stopReq)break;
   off();ED.highlight(acts[i].i);pyOn(acts[i].i);if(document.getElementById('stp')&&document.getElementById('stp').checked)await VB.step();
   $('#msg').textContent=lab+'Passo '+(i+1)+' de '+acts.length;await ACT[acts[i].k]();
  }
- off();running=false;ED.lock(false);tStop();
+ if(stopReq){stopReq=false;off();running=false;ED.lock(false);reset();rstLabel();$('#msg').textContent='';say('Parei! Mexe nos blocos e tenta outra vez. 🙂');return}
+ off();running=false;ED.lock(false);rstLabel();tStop();
  const cnt=prog.filter(b=>b.k!=='end').length,nz=a=>L.free?a.map(k=>'RBGY'.includes(k)?'P':k):a,seq=e=>nz(expand(e?{...e}:null).map(a=>a.k)).join(),goal=e=>nz(L.x?L.x(e):L.g).join(),shownOk=seq(e0)===goal(e0),okSeq=tests.every(e=>seq(e)===goal(e)),ok=okSeq&&(!L.max||cnt<=L.max);
  if(ok){
   const o=OPT[cy][lv],st=VB.stars(cnt,o),key=cy+'-'+lv;
