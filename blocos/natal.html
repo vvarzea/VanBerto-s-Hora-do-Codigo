@@ -47,7 +47,7 @@
 
 <div id="fixed-robot-wrap"><div class="fixed-bubble" id="fixedRobotBubble" role="status" aria-live="polite">Olá! 😊</div><canvas class="fixed-robot" id="fixed-robot-cv" width="192" height="192" role="button" tabindex="0" aria-label="Robô VanBerto's — clica para falar"></canvas></div>
 
-<div id="cert" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:20;padding:12px;overflow:auto"><div class="card" style="max-width:700px;margin:0 auto"><img id="cimg" alt="Certificado" style="width:100%"><div class="row"><button id="cdl" style="background:#30a46c">⬇ Guardar PNG</button><button id="cpr" style="background:#3776ab">🖨️ Imprimir</button><button id="cx" style="background:#6b7280">Fechar</button></div></div></div>
+<div id="cert" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:20;padding:12px;overflow:auto"><div class="card" style="max-width:700px;margin:0 auto"><img id="cimg" alt="Certificado" style="width:100%"><div id="chist" style="margin:8px 0;font-weight:700;text-align:center;color:#444"></div><div class="row"><button id="cdl" style="background:#30a46c">⬇ Guardar PNG</button><button id="cpr" style="background:#3776ab">🖨️ Imprimir</button><button id="cx" style="background:#6b7280">Fechar</button></div></div></div>
 <script src="vb-core.js"></script>
 <script src="vb-solucoes.js"></script>
 <script src="vb-atmos.js"></script>
@@ -591,20 +591,20 @@ if(!P.name)P.name=(function(){try{return localStorage.getItem('vanbertos_student
 $('#sp').onchange=e=>{SPD=+e.target.value};
 function levels(){
  $('#cys').innerHTML=CY.map((c,i)=>'<button class="lvb'+(i===cy?' on':'')+'" data-c="'+i+'">'+c.n+'</button>').join('');
- $('#lvs').innerHTML=LV.map((_,i)=>{const s=P.d[cy+'-'+i];return '<button class="lvb'+(i===lv?' on':'')+'" data-l="'+i+'">Missão '+(i+1)+(s?' '+'⭐'.repeat(s):'')+'</button>'}).join('');
+ $('#lvs').innerHTML=LV.map((_,i)=>{const s=P.d[cy+'-'+i];return '<button class="lvb'+(i===lv?' on':'')+'" data-l="'+i+'">Missão '+(i+1)+(s?' '+'⭐'.repeat(s):'')+'</button>'}).join('')+(P.c&&P.c[cy]?'<button class="lvb" data-cert="1" style="background:#e5a000;color:#fff;border-color:#e5a000">🎓 Certificado</button>':'');
  $('#mis').textContent=LV[lv].t+(LV[lv].max?' (máx. '+LV[lv].max+' blocos)':'');
  ED.setAllowed(CY[cy].b);
  $('#pyb').style.display=CY[cy].py?'':'none';
  if(!CY[cy].py)$('#pyw').style.display='none';
 }
 $('#cys').onclick=e=>{const b=e.target.closest('button');if(!b||running)return;cy=+b.dataset.c;LV=CY[cy].lv;lv=0;clear();levels();render();reset();$('#msg').textContent='';if(CY[cy].py===2)$('#pyw').style.display='block';say(LV[lv].t)};
-$('#lvs').onclick=e=>{const b=e.target.closest('button');if(!b||running)return;lv=+b.dataset.l;clear();levels();render();reset();$('#msg').textContent='';say(LV[lv].t)};
+$('#lvs').onclick=e=>{const b=e.target.closest('button');if(!b||running)return;if(b.dataset.cert){certificate();return}lv=+b.dataset.l;clear();levels();render();reset();$('#msg').textContent='';say(LV[lv].t)};
 const CERT_AC={game:'Fábrica do Pai Natal',main:'#c0262d',dark:'#7f1d1d',rgb:'192,38,45'};
 function certStar(g,cx,cy,R,r){g.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rad=i%2?r:R;g[i?'lineTo':'moveTo'](cx+Math.cos(a)*rad,cy+Math.sin(a)*rad)}g.closePath()}
 function certificate(){
  const draw=()=>{
   const W=1600,H=1131,F="'Nunito', sans-serif",c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),AC=CERT_AC;
-  const st=LV.reduce((a,_,i)=>a+(P.d[cy+'-'+i]||0),0),max=LV.length*3,pct=max?st/max:1,earned=Math.max(1,Math.round(pct*3));
+  const sOf=i=>(P.l&&P.l[cy+'-'+i])||P.d[cy+'-'+i]||0,st=LV.reduce((a,_,i)=>a+sOf(i),0),max=LV.length*3,pct=max?st/max:1,earned=Math.max(1,Math.round(pct*3));
   const fit=(t,mw,px,w,mn)=>{let z=px;for(;;){g.font=w+' '+z+'px '+F;if(g.measureText(t).width<=mw||z<=(mn||18))break;z-=2}};
   const bg=g.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#fffdf6');bg.addColorStop(1,'#fff6df');g.fillStyle=bg;g.fillRect(0,0,W,H);
   g.strokeStyle='#d9a441';g.lineWidth=12;g.strokeRect(40,40,W-80,H-80);
@@ -639,13 +639,17 @@ function certificate(){
   g.fillStyle='#777';g.font='italic 700 30px '+F;g.fillText(new Date().toLocaleDateString('pt-PT',{day:'numeric',month:'long',year:'numeric'}),cx,922);
   g.strokeStyle=AC.dark;g.lineWidth=3;g.beginPath();g.moveTo(cx-200,972);g.lineTo(cx+200,972);g.stroke();
   g.fillStyle=AC.dark;g.font='italic 800 38px '+F;g.fillText('Prof.ª Vanda Várzea',cx,1018);
+  const PH=(P.h=P.h||{}),HH=(PH[cy]=PH[cy]||[]),lh=HH[HH.length-1];
+  if(!lh||lh.s!==st||lh.m!==max){HH.push({t:Date.now(),s:st,m:max});if(HH.length>12)HH.shift();save()}
+  const fd=t=>new Date(t).toLocaleDateString('pt-PT',{day:'numeric',month:'numeric'}),n2=HH.length,pr=n2>1?HH[n2-2].s/HH[n2-2].m:0,pn=HH[n2-1].s/HH[n2-1].m;
+  $('#chist').innerHTML='📈 A tua evolução: '+HH.map(h=>fd(h.t)+' → '+h.s+'/'+h.m+' ⭐').join(' · ')+(n2<2?'':pn>pr?' — ⬆️ Melhoraste!':pn<pr?' — ⬇️ Desceste um pouco, tenta outra vez!':' — ➡️ Igual');
   $('#cimg').src=c.toDataURL('image/png');$('#cert').style.display='block';
  };
  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(draw);else draw();
 }
 $('#cpr').onclick=()=>{const w=window.open('','_blank');if(!w)return;w.document.write('<!doctype html><title>Certificado</title><style>@page{size:A4 landscape;margin:0}html,body{margin:0}img{width:100%;display:block}</style><img src="'+$('#cimg').src+'">');w.document.close();setTimeout(()=>{try{w.focus();w.print()}catch(e){}},400)};
 $('#cx').onclick=()=>$('#cert').style.display='none';
-$('#cdl').onclick=()=>{const a=document.createElement('a');a.href=$('#cimg').src;a.download='certificado-natal.png';a.click()};
+$('#cdl').onclick=()=>{const a=document.createElement('a');a.href=$('#cimg').src;a.download='certificado-natal-ciclo'+(cy+1)+'-'+new Date().toISOString().slice(0,10)+'.png';a.click()};
 $('#go').onclick=async()=>{
  if(running)return;
  syncProg();
@@ -664,8 +668,9 @@ $('#go').onclick=async()=>{
  const cnt=prog.filter(b=>b.k!=='end').length,nz=a=>L.free?a.map(k=>'RBGY'.includes(k)?'P':k):a,seq=e=>nz(expand(e?{...e}:null).map(a=>a.k)).join(),goal=e=>nz(L.x?L.x(e):L.g).join(),shownOk=seq(e0)===goal(e0),okSeq=tests.every(e=>seq(e)===goal(e)),ok=okSeq&&(!L.max||cnt<=L.max);
  if(ok){
   const o=OPT[cy][lv],st=VB.stars(cnt,o),key=cy+'-'+lv;
-  if((P.d[key]||0)<st)P.d[key]=st;FAILS[key]=0;save();levels();
+  if((P.d[key]||0)<st)P.d[key]=st;(P.l=P.l||{})[key]=st;FAILS[key]=0;save();levels();
   const all=LV.every((_,i)=>P.d[cy+'-'+i]);
+  if(all){P.c=P.c||{};P.c[cy]=1;save();levels()}
   $('#msg').innerHTML='✅ Missão cumprida! '+'⭐'.repeat(st)+(st<3?' (o ótimo é '+o+' blocos — experimenta o bloco «repetir» para encurtar o programa)':'')+(lv<LV.length-1?' <button id="nx" style="background:#2f6bff">Próxima missão ▶</button>':' Terminaste as missões deste ciclo! 🏆')+(all?' <button id="ce" style="background:#e5a000">🎓 Certificado</button>':'');
   VB.compare&&VB.compare({game:'natal',cy,lv,prog,parsePy,BL,conds:CONDS,whiles:WHILES,open:OPEN,host:$('#msg'),showPy:!!CY[cy].py});
   say('Boa! A fábrica está orgulhosa de ti! 🎉');dance();

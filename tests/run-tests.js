@@ -28,7 +28,7 @@ for(const m of pr.matchAll(/⭐⭐⭐ com (\d+) ou menos; ⭐⭐ até (\d+)/g)){
 ok(n>0&&bad===0,`professora.html: ${n} limiares coerentes com a regra`);
 
 // 4) service worker e versões
-ok(/vanbertos-v63/.test(R('sw.js')),'sw.js: cache atualizada');
+ok(/vanbertos-v66/.test(R('sw.js')),'sw.js: cache atualizada');
 for(const g of ['fabrica','casa-cao','natal']) ok(R(`blocos/${g}.html`).includes('vb-solucoes.js')&&R(`blocos/${g}.html`).includes('VB.compare'),`${g}: carrega as soluções e a comparação`);
 ok(R('sw.js').includes('vb-solucoes.js'),'sw.js: guarda vb-solucoes.js offline');
 console.log('\nPara validar as soluções no motor real dos jogos:  python3 tests/verify-missoes.py');
@@ -39,4 +39,12 @@ ok(R('sw.js').includes('vb-extras.js')&&R('sw.js').includes('vb-jogo.css'),'sw.j
 for(const g of ['fabrica','casa-cao','natal'])ok(R(`blocos/${g}.html`).includes('vb-atmos.js')&&R(`blocos/${g}.html`).includes('VBA.'),`${g}: usa a atmosfera 3D (vb-atmos.js)`);
 ok(R('sw.js').includes('vb-atmos.js'),'sw.js: guarda vb-atmos.js offline');
 for(const g of ['fabrica','casa-cao','natal'])ok(R(`blocos/${g}.html`).includes('VBA.post.begin(R)')&&R(`blocos/${g}.html`).includes('VBA.post.end(R)'),`${g}: pós-processamento de brilho ligado`);
+
+// 5) missões: a solução de referência de cada missão (fábricas e cão) tem de resolver a missão e bater certo com o OPT
+try{require('child_process').execFileSync(process.execPath,[path.join(__dirname,'verificar-missoes.js')],{stdio:'pipe'});ok(true,'missões: todas as soluções de referência passam (fábricas e cão)')}
+catch(e){ok(false,'missões: '+String(e.stdout||e.message).split('\n').filter(l=>l.startsWith('✗')).join(' | '))}
+for(const g of ['fabrica','casa-cao','natal']){const h=R(`blocos/${g}.html`);ok(h.includes('P.c[cy]')&&h.includes('data-cert')&&h.includes('P.l')&&h.includes('P.h'),`${g}: certificado do ciclo com botão permanente e histórico de evolução`)}
+
+// 6) os scripts dentro dos HTML dos jogos têm de compilar (apanha erros de sintaxe e nomes repetidos, como «const H» duas vezes)
+for(const g of ['fabrica','casa-cao','natal']){let good=true,msg='';for(const m of R(`blocos/${g}.html`).matchAll(/<script(?![^>]*src)[^>]*>([\s\S]*?)<\/script>/g)){try{new Function(m[1])}catch(e){good=false;msg=e.message}}ok(good,`${g}: o código do jogo compila sem erros${msg?' ('+msg+')':''}`)}
 process.exit(fail?1:0);

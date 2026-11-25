@@ -61,3 +61,10 @@ Para te orientares, as secções estão assinaladas com cabeçalhos `/* ===== NO
 - O chão tem reflexo real (a cena é desenhada duas vezes). O «Modo leve» desliga-o e é ativado sozinho em computadores lentos.
 - A câmara aproxima-se do carro/brinquedo durante a montagem (`camZoom`). Os braços e duendes da frente escondem-se nessa altura para não taparem.
 - O cão 3D do «Cão Robô» tem uma opção «🐶 Cão 3D» para voltar à ilustração.
+
+## Certificado e missões novas (fábricas e cão)
+- O 🎓 Certificado do ciclo aparece ao concluir **todas** as missões do ciclo. A partir daí o botão «🎓 Certificado» fica sempre na lista de missões desse ciclo (`P.c[ciclo]`), mesmo que o aluno repita missões.
+- As estrelas e a medalha do certificado seguem o **resultado mais recente** de cada missão (`P.l`), por isso podem subir ou descer. Cada vez que o certificado é aberto e o resultado mudou, regista-se uma linha em `P.h[ciclo]` e mostra-se por baixo do certificado («📈 A tua evolução», com ⬆️/⬇️). O PNG guardado leva o ciclo e a data no nome do ficheiro, para o aluno comparar os certificados.
+- As estrelas mostradas em cada botão de missão continuam a ser o melhor resultado (`P.d`).
+- Ao acrescentar missões: põe-nas no fim do ciclo, atualiza `OPT`, a solução em `vb-solucoes.js`, a `professora.html` e o total de estrelas em `vb-blocos.js`. Quem já tinha o certificado do ciclo não o perde.
+- `node tests/verificar-missoes.js` verifica (sem navegador) que a solução de cada missão a resolve, cumpre o limite e bate certo com o `OPT`. Já corre dentro de `node tests/run-tests.js`.
